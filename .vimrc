@@ -83,7 +83,7 @@ let g:NERDTreeChDirMode=1 " Set current working directory
 let g:NERDTreeShowHidden=1 " Show hidden files
 au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif " Close NERDTree if we close last file
 au StdinReadPre * let s:std_in = 1
-au VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTreeToggle' argv()[0] | winc p | ene | tabe | exe 'terminal' | vsplit | exe 'terminal' | winc h | exe 'VimwikiTabIndex' | tabm 0 | tabn | endif " Toggle NERDTree at startup
+au VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTreeToggle' argv()[0] | winc p | ene | tabe | exe 'terminal' | vsplit | exe 'terminal' | winc h | exe 'VimwikiTabIndex' | exe ':Calendar -view=year -split=vertical -width=27' | wincmd w | tabm 0 | tabn | endif " Toggle NERDTree at startup
 " au VimEnter * if argc() == 0 | exe 'VimwikiIndex' | endif
 
 " Enable JSX syntax in .js files
