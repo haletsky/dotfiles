@@ -1,4 +1,3 @@
-" call plug#begin('~/.local/share/nvim/plugged')
 call plug#begin('~/.vim/plugins')
 
 " Programming
@@ -65,6 +64,8 @@ colorscheme one
 set background=dark
 filetype plugin on
 filetype indent on
+
+" Large file definition, 500 KiB
 let g:hugefile_trigger_size=0.5
 
 " Calendar settings
@@ -94,7 +95,7 @@ let g:ctrlp_custom_ignore = 'node_modules'
 " ALE linter
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_linters = {
-\   'javascript': ['standard'],
+\   'javascript': ['eslint', 'standard'],
 \   'typescript': ['tslint', 'tsserver', 'typecheck'],
 \   'go': ['golint'],
 \   'python': ['pylint']
