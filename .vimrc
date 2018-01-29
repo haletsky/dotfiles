@@ -7,9 +7,9 @@ Plug 'w0rp/ale'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'marijnh/tern_for_vim'
 Plug 'moll/vim-node'
 Plug 'leafgarland/typescript-vim'
+Plug 'ElmCast/elm-vim'
 
 " Appearance
 Plug 'rakr/vim-one'
@@ -24,6 +24,9 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'raimondi/delimitmate'
 Plug 'mhinz/vim-hugefile'
 Plug 'itchyny/calendar.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'ryanss/vim-hackernews'
+" Plug 'Shougo/denite.nvim'
 
 call plug#end()
 
@@ -42,7 +45,15 @@ if !isdirectory($HOME."/.vim/dict")
 endif
 
 syntax on
+try
+  colorscheme one
+catch
+endtry
 set nocompatible
+set autoread
+set langmenu=en
+set wildmenu
+set wildignore+=node_modules/**
 set nowrap
 set shiftwidth=2
 set tabstop=2
@@ -54,44 +65,35 @@ set undodir=~/.vim/undo-dir
 set undofile
 set laststatus=2
 set noswapfile
-set wildignore+=node_modules/**
+set nobackup
+set nowb
 set noshowmode
 set mouse=a
+set ignorecase
+set encoding=utf8
 set complete+=k
 set cursorline
 set list listchars=tab:>-,trail:.,precedes:<,extends:>
-colorscheme one
 set background=dark
 filetype plugin on
 filetype indent on
 
-" Large file definition, 500 KiB
-let g:hugefile_trigger_size=0.5
 
+" Large file definition, 500 KiB
+let g:hugefile_trigger_size = 0.5
 " Calendar settings
 let g:calendar_views = ['year', 'month', 'day', 'clock']
 let g:calendar_first_day = 'monday'
-
 " Vimwiki files location
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
-
-" Load dictinary according to filetype
-au FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
-
-" NERDTree
-let g:NERDTreeChDirMode=1 " Set current working directory
-let g:NERDTreeShowHidden=1 " Show hidden files
-au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif " Close NERDTree if we close last file
-au StdinReadPre * let s:std_in = 1
-au VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTreeToggle' argv()[0] | winc p | ene | tabe | exe 'terminal' | vsplit | exe 'terminal' | winc h | exe 'VimwikiTabIndex' | exe ':Calendar -view=year -split=vertical -width=27' | wincmd w | tabm 0 | tabn | endif " Toggle NERDTree at startup
-" au VimEnter * if argc() == 0 | exe 'VimwikiIndex' | endif
-
+" Set current working directory
+let g:NERDTreeChDirMode=1
+" Show hidden files
+let g:NERDTreeShowHidden=1
 " Enable JSX syntax in .js files
 let g:jsx_ext_required = 0
-
 " Ignore 'node_modules' folder while CtrlP
 let g:ctrlp_custom_ignore = 'node_modules'
-
 " ALE linter
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_linters = {
@@ -100,12 +102,11 @@ let g:ale_linters = {
 \   'go': ['golint'],
 \   'python': ['pylint']
 \}
-
 " Lightline
 let g:lightline = {
       \ 'colorscheme': 'one',
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'readonly', 'filename', 'modified', 'readonly' ] ],
+      \   'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
       \   'right': [ [ 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding' ] ]
       \ },
       \ 'inactive': {
@@ -121,47 +122,33 @@ let g:lightline = {
       \   'linter_ok': 'LightlineLinterOK'
       \ },
       \ }
-
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ▲', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✓' : ''
-endfunction
-
-autocmd User ALELint call lightline#update()
-
 " Load python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
-
 " Put 1 space after comment
 let g:NERDSpaceDelims = 1
 
-" Autocompletion
-function! SmartTab()
-   if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
-      return "\<Tab>"
-   else
-      return "\<C-N>"
-   endif
-endfunction
-inoremap <Tab> <C-R>=SmartTab()<CR>
 
+" AUTOCMDS
+
+" Close NERDTree if we close last file
+autocmd StdinReadPre * let s:std_in = 1
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" Update status line when did lint
+autocmd User ALELint call lightline#update()
+" remove traling spaces after save
+autocmd BufWritePre * %s/\s\+$//e
+" Load dictinary according to filetype
+autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
+" Update vim buffer if current file changed
+autocmd CursorHold,CursorHoldI * checktime
+" Toggle NERDTree at startup
+autocmd VimEnter * call s:Setup()
+
+
+" HOTKEYS
+
+inoremap <Tab> <C-R>=SmartTab()<CR>
 " Keybindings
 " Map NERDTreeToggle on Control-b
 map <C-b> :NERDTreeToggle<CR>
@@ -184,20 +171,42 @@ map <C-c> <Plug>NERDCommenterToggle
 map <C-o> :vs +VimwikiIndex<CR> :vertical res 50<CR>
 " TernDefinition
 map <C-]> :TernDef<CR>
+map <C-f> :Find
 
+command! -nargs=* Find call s:FindInFiles(<f-args>)
 
+if !has('gui_running')
+  set t_Co=256
+endif
 " One Dark theme
 if (has("termguicolors"))
   set termguicolors
 endif
 
-" remove traling spaces after save
-autocmd BufWritePre * %s/\s\+$//e
+function! s:Setup()
+  if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
+    execute 'NERDTreeToggle' argv()[0]
+    winc p
+    ene
+    tabe
+    execute 'terminal'
+    vsplit
+    execute 'terminal'
+    winc h
+    execute 'VimwikiTabIndex'
+    execute 'Calendar -view=year -split=vertical -width=31'
+    wincmd w
+    wincmd v
+    wincmd w
+    vertical resize 62
+    execute 'HackerNews'
+    wincmd h
+    tabm 0
+    tabn
+  endif
+endfunction
 
-" Update vim buffer if current file changed
-au CursorHold,CursorHoldI * checktime
-
-function! FindInFiles(...)
+function! s:FindInFiles(...)
   let path = ' **/*.' . expand("%:e")
   let word = expand('<cword>')
 
@@ -211,9 +220,32 @@ function! FindInFiles(...)
 
   execute 'noautocmd lvimgrep ' . word . ' ' . path . ' | lw'
 endfunction
-command! -nargs=* Find call FindInFiles(<f-args>)
-map <C-f> :Find
 
-if !has('gui_running')
-  set t_Co=256
-endif
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ▲', all_non_errors)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '✓' : ''
+endfunction
+
+function! SmartTab()
+   if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
+      return "\<Tab>"
+   else
+      return "\<C-N>"
+   endif
+endfunction
