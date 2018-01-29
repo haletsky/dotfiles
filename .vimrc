@@ -198,7 +198,7 @@ function! s:Setup()
     wincmd w
     wincmd v
     wincmd w
-    vertical resize 62
+    vertical resize 80
     execute 'HackerNews'
     wincmd h
     tabm 0
