@@ -114,12 +114,19 @@ let g:lightline = {
       \   'right': [],
       \ },
       \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
+      \   'gitbranch': 'fugitive#head',
       \ },
       \ 'component_expand': {
       \   'linter_warnings': 'LightlineLinterWarnings',
       \   'linter_errors': 'LightlineLinterErrors',
       \   'linter_ok': 'LightlineLinterOK'
+      \ },
+      \ 'tab_component_function': {
+      \   'title': 'TabTitle'
+      \ },
+      \ 'tab': {
+      \   'active': ['title'],
+      \   'inactive': ['title']
       \ },
       \ }
 " Load python provider
@@ -248,4 +255,18 @@ function! SmartTab()
    else
       return "\<C-N>"
    endif
+endfunction
+
+function! TabTitle(...)
+ let title = a:1
+  if a:1 == 1
+    let title = 'Home'
+  endif
+  if a:1 == 2
+    let title = 'Editor'
+  endif
+  if a:1 == 3
+    let title = 'Terminal'
+  endif
+  return title
 endfunction
