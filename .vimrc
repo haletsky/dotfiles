@@ -96,6 +96,8 @@ let g:jsx_ext_required = 0
 let g:ctrlp_custom_ignore = 'node_modules'
 " ALE linter
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
 let g:ale_linters = {
 \   'javascript': ['eslint', 'standard'],
 \   'typescript': ['tslint', 'tsserver', 'typecheck'],
@@ -127,6 +129,10 @@ let g:lightline = {
       \ 'tab': {
       \   'active': ['title'],
       \   'inactive': ['title']
+      \ },
+      \ 'subseparator': {
+      \   'left': '',
+      \   'right': ''
       \ },
       \ }
 " Load python provider
@@ -232,21 +238,21 @@ function! LightlineLinterWarnings() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ▲', all_non_errors)
+  return l:counts.total == 0 ? '' : printf('%d ✱', all_non_errors)
 endfunction
 
 function! LightlineLinterErrors() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
+  return l:counts.total == 0 ? '' : printf('%d ✖', all_errors)
 endfunction
 
 function! LightlineLinterOK() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✓' : ''
+  return l:counts.total == 0 ? '✔' : ''
 endfunction
 
 function! SmartTab()
@@ -260,13 +266,13 @@ endfunction
 function! TabTitle(...)
  let title = a:1
   if a:1 == 1
-    let title = 'Home'
+    let title = '᚛ Home     ᚜'
   endif
   if a:1 == 2
-    let title = 'Editor'
+    let title = '᚛ Editor   ᚜'
   endif
   if a:1 == 3
-    let title = 'Terminal'
+    let title = '᚛ Terminal ᚜'
   endif
   return title
 endfunction
