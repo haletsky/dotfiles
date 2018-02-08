@@ -17,7 +17,6 @@ Plug 'itchyny/lightline.vim'
 
 " Functionality
 Plug 'scrooloose/nerdtree'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'docunext/closetag.vim'
 Plug 'scrooloose/nerdcommenter'
@@ -26,7 +25,8 @@ Plug 'mhinz/vim-hugefile'
 Plug 'itchyny/calendar.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'ryanss/vim-hackernews'
-" Plug 'Shougo/denite.nvim'
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/deoplete.nvim'
 
 call plug#end()
 
@@ -53,7 +53,7 @@ set nocompatible
 set autoread
 set langmenu=en
 set wildmenu
-set wildignore+=node_modules/**
+set wildignore=node_modules
 set nowrap
 set shiftwidth=2
 set tabstop=2
@@ -131,8 +131,8 @@ let g:lightline = {
       \   'inactive': ['title']
       \ },
       \ 'subseparator': {
-      \   'left': '',
-      \   'right': ''
+      \   'left': '৷',
+      \   'right': '৷'
       \ },
       \ }
 " Load python provider
@@ -140,6 +140,41 @@ let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
 " Put 1 space after comment
 let g:NERDSpaceDelims = 1
+
+let g:deoplete#enable_at_startup = 1
+let ignore=&wildignore . ',*.pyc,.git,.hg,.svn'
+call denite#custom#var('grep', 'pattern_opt', ['--exclude-dir=node_modules'])
+call denite#custom#var('file_rec', 'command',
+    \ ['scantree.py', '--ignore', ignore])
+call denite#custom#map(
+      \ 'insert',
+      \ '<C-j>',
+      \ '<denite:move_to_next_line>',
+      \ 'noremap'
+      \)
+call denite#custom#map(
+      \ 'insert',
+      \ '<C-k>',
+      \ '<denite:move_to_previous_line>',
+      \ 'noremap'
+      \)
+let s:menus = {}
+let s:menus.confs = {
+  \ 'description': 'Configuration files'
+  \ }
+let s:menus.confs.file_candidates = [
+  \ ['zshrc', '~/.zshrc', 'sjoi'],
+  \ ['vimrc', '~/.vimrc'],
+  \ ]
+let s:menus.cmmnds = {
+  \ 'description': 'Some commands'
+  \ }
+let s:menus.cmmnds.command_candidates = [
+  \ ['Vimwiki', 'VimwikiIndexTab'],
+  \ ['Calendar', 'Calendar -position=tab'],
+  \ ['Hacker News', 'tabe | HackerNews']
+  \ ]
+call denite#custom#var('menu', 'menus', s:menus)
 
 
 " AUTOCMDS
@@ -180,11 +215,12 @@ imap jj <Esc>
 nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
-" Vimwiki toggle
-map <C-o> :vs +VimwikiIndex<CR> :vertical res 50<CR>
-" TernDefinition
-map <C-]> :TernDef<CR>
-map <C-f> :Find
+" Denite
+map <C-o> :Denite menu<CR>
+map <C-f> :Denite grep<CR>
+map <C-p> :Denite file_rec<CR>
+" Move to word in file
+map f <Plug>(easymotion-bd-W)
 
 command! -nargs=* Find call s:FindInFiles(<f-args>)
 
@@ -208,30 +244,9 @@ function! s:Setup()
     winc h
     execute 'VimwikiTabIndex'
     execute 'Calendar -view=year -split=vertical -width=31'
-    wincmd w
-    wincmd v
-    wincmd w
-    vertical resize 80
-    execute 'HackerNews'
-    wincmd h
     tabm 0
     tabn
   endif
-endfunction
-
-function! s:FindInFiles(...)
-  let path = ' **/*.' . expand("%:e")
-  let word = expand('<cword>')
-
-  if exists('a:1')
-    let word = a:1
-  endif
-
-  if exists('a:2')
-    let path = a:2
-  endif
-
-  execute 'noautocmd lvimgrep ' . word . ' ' . path . ' | lw'
 endfunction
 
 function! LightlineLinterWarnings() abort
