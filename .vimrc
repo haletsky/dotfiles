@@ -157,12 +157,12 @@ let s:menus.confs.file_candidates = [
   \ ['zshrc', '~/.zshrc', 'sjoi'],
   \ ['vimrc', '~/.vimrc'],
   \ ]
-let s:menus.cmmnds = { }
-let s:menus.cmmnds.description = 'Some commands'
-let s:menus.cmmnds.command_candidates = [
-  \ ['Vimwiki', 'VimwikiIndexTab'],
-  \ ['Calendar', 'Calendar -position=tab'],
-  \ ['Hacker News', 'tabe | HackerNews']
+let s:menus.apps = { }
+let s:menus.apps.description = 'List of applicatons.'
+let s:menus.apps.command_candidates = [
+  \ ['Vimwiki', 'tabe | tabm | VimwikiIndex'],
+  \ ['Calendar', 'tabe | tabm | Calendar'],
+  \ ['Hacker News', 'tabe | tabm | setlocal nonumber | HackerNews']
   \ ]
 call denite#custom#var('menu', 'menus', s:menus)
 
