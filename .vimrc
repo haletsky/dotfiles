@@ -97,6 +97,13 @@ let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 let g:NERDTreeChDirMode=1
 let g:NERDTreeShowHidden=1
 let g:NERDSpaceDelims = 1
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "◉",
+    \ "Staged"    : "●",
+    \ "Untracked" : "○",
+    \ "Dirty"     : "◈",
+    \ "Clean"     : "✔︎",
+    \ }
 " Enable JSX syntax in .js files
 let g:jsx_ext_required = 0
 " ALE linter
