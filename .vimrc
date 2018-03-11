@@ -24,6 +24,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'gregsexton/gitv', {'on': ['Gitv']}
 call plug#end()
 
 
@@ -44,6 +45,7 @@ endif
 
 syntax on
 try
+  let g:one_allow_italics = 1
   colorscheme one
 catch
 endtry
@@ -176,6 +178,8 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " AUTOCMDS "
 
+" Do not show numbers in terminal
+autocmd TermOpen * setlocal nonumber
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -187,8 +191,15 @@ autocmd BufWritePre * %s/\s\+$//e
 autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
 " Update vim buffer if current file changed
 autocmd CursorHold,CursorHoldI * checktime
+autocmd FileType go setl sw=4 sts=4 et
 " Toggle NERDTree at startup
-autocmd VimEnter * call s:Setup()
+if v:vim_did_enter
+  call s:Setup()
+else
+  autocmd VimEnter * call s:Setup()
+endif
+" Move cursor to last edited line when open file
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 
 " HOTKEYS "
@@ -199,15 +210,16 @@ inoremap <Tab> <C-R>=SmartTab()<CR>
 map <C-b> :NERDTreeToggle<CR>
 imap <C-b> <C-O>:NERDTreeToggle<CR>
 " Window movement
-map <C-j> :winc j<CR>
-map <C-k> :winc k<CR>
-map <C-h> :winc h<CR>
-map <C-l> :winc l<CR>
+" map <C-j> :winc j<CR>
+" map <C-k> :winc k<CR>
+" map <C-h> :winc h<CR>
+" map <C-l> :winc l<CR>
 " Tab movement
 noremap <A-l> :tabn<CR>
 noremap <A-h> :tabp<CR>
 " NORMAL mode by jj
 imap jj <Esc>
+tnoremap <C-j><C-j> <C-\><C-n>
 " COMMAND mode by space
 nmap <Space> :
 " Comment code
@@ -231,9 +243,16 @@ function! s:Setup()
     execute 'terminal'
     setlocal nonumber
     execute 'VimwikiTabIndex'
-    setlocal nonumber
     execute 'Calendar -view=year -split=vertical -width=31'
     wincmd w
+    setlocal nonumber
+    setlocal colorcolumn=81
+    wincmd v
+    vertical resize 80
+    setlocal wrap
+    wincmd l
+    execute 'VimwikiDiaryIndex'
+    setlocal nonumber
     tabm 0
     tabn
   endif
