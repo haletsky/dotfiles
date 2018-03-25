@@ -219,7 +219,9 @@ noremap <A-l> :tabn<CR>
 noremap <A-h> :tabp<CR>
 " NORMAL mode by jj
 imap jj <Esc>
-tnoremap <C-j><C-j> <C-\><C-n>
+imap <C-j> <C-\><C-n>
+vmap <C-j> <C-\><C-n>
+tnoremap <C-j> <C-\><C-n>
 " COMMAND mode by space
 nmap <Space> :
 " Comment code
