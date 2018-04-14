@@ -14,17 +14,22 @@ Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'heavenshell/vim-jsdoc'
 " Programming
 Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
+Plug 'mhartington/nvim-typescript'
 Plug 'moll/vim-node'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'gregsexton/gitv', {'on': ['Gitv']}
+Plug 'fatih/vim-go'
+Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install --global tern' }
+Plug 'zchee/deoplete-go', { 'do': 'make' }
+Plug 'gregsexton/gitv', { 'on': ['Gitv'] }
 call plug#end()
 
 
@@ -76,6 +81,7 @@ set complete+=k
 set cursorline
 set list listchars=tab:>-,trail:.,precedes:<,extends:>
 set background=dark
+set completeopt-=preview
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -227,7 +233,7 @@ nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
 " Denite
-map <C-o> :Denite menu<CR>
+" map <C-o> :Denite menu<CR>
 map <C-f> :Denite grep<CR>
 map <C-p> :Denite file_rec<CR>
 " Move to word in file
