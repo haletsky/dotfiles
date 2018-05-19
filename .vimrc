@@ -18,11 +18,11 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'heavenshell/vim-jsdoc'
 " Programming
 Plug 'airblade/vim-gitgutter'
-Plug 'leafgarland/typescript-vim'
-Plug 'mhartington/nvim-typescript'
 Plug 'moll/vim-node'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'mhartington/nvim-typescript'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -79,7 +79,7 @@ set ignorecase
 set encoding=utf8
 set complete+=k
 set cursorline
-set list listchars=tab:>-,trail:.,precedes:<,extends:>
+set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
 set background=dark
 set completeopt-=preview
 filetype plugin on
@@ -197,7 +197,7 @@ autocmd BufWritePre * %s/\s\+$//e
 autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
 " Update vim buffer if current file changed
 autocmd CursorHold,CursorHoldI * checktime
-autocmd FileType go setl sw=4 sts=4 et
+autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
 " Toggle NERDTree at startup
 if v:vim_did_enter
   call s:Setup()
