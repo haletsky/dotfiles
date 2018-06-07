@@ -255,10 +255,10 @@ function! s:Setup()
     ene
     tabe
     execute 'terminal'
+    setlocal nonumber
     execute 'VimwikiTabIndex'
     execute 'Calendar -view=year -split=vertical -width=31'
     wincmd w
-    setlocal nonumber
     setlocal colorcolumn=81
     wincmd v
     vertical resize 80
