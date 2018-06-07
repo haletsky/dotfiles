@@ -105,6 +105,8 @@ let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 let g:NERDTreeChDirMode=1
 let g:NERDTreeShowHidden=1
 let g:NERDSpaceDelims = 1
+let g:NERDTreeMarkBookmarks = 1
+let g:NERDTreeMinimalUI = 1
 let g:NERDTreeIndicatorMapCustom = {
     \ "Modified"  : "◉",
     \ "Staged"    : "●",
@@ -118,11 +120,14 @@ let g:jsx_ext_required = 0
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
+let g:ale_fix_on_save = 1
 let g:ale_linters = { }
 let g:ale_linters.javascript = ['eslint', 'standard']
 let g:ale_linters.typescript = ['tslint', 'tsserver', 'typecheck']
 let g:ale_linters.python = ['pylint']
 let g:ale_linters.go = ['golint']
+let g:ale_fixers = { }
+let g:ale_fixers.javascript = ['eslint']
 " Lightline
 let g:lightline = { }
 let g:lightline.colorscheme = 'one'
@@ -147,7 +152,7 @@ let g:python3_host_prog = '/usr/bin/python3'
 " Dark Powered plugins
 let g:deoplete#enable_at_startup = 1
 call denite#custom#var('grep', 'command', ['ag'])
-call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep'])
+call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--ignore', 'node_modules'])
 call denite#custom#var('grep', 'recursive_opts', [])
 call denite#custom#var('grep', 'pattern_opt', [])
 call denite#custom#var('grep', 'separator', ['--'])
@@ -186,6 +191,7 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " Do not show numbers in terminal
 autocmd TermOpen * setlocal nonumber
+autocmd FileType vimwiki setlocal nonumber
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -249,7 +255,6 @@ function! s:Setup()
     ene
     tabe
     execute 'terminal'
-    setlocal nonumber
     execute 'VimwikiTabIndex'
     execute 'Calendar -view=year -split=vertical -width=31'
     wincmd w
@@ -260,7 +265,6 @@ function! s:Setup()
     setlocal wrap
     wincmd l
     execute 'VimwikiDiaryIndex'
-    setlocal nonumber
     tabm 0
     tabn
   endif
