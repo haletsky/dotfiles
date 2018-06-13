@@ -191,7 +191,7 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " Do not show numbers in terminal
 autocmd TermOpen * setlocal nonumber
-autocmd FileType vimwiki setlocal nonumber
+autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
