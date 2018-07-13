@@ -15,7 +15,6 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'heavenshell/vim-jsdoc'
 " Programming
 Plug 'airblade/vim-gitgutter'
 Plug 'moll/vim-node'
@@ -26,10 +25,10 @@ Plug 'mhartington/nvim-typescript'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': 'GoUpdateBinaries' }
+Plug 'ternjs/tern_for_vim'
 Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install --global tern' }
 Plug 'zchee/deoplete-go', { 'do': 'make' }
-Plug 'gregsexton/gitv', { 'on': ['Gitv'] }
 call plug#end()
 
 
@@ -92,8 +91,11 @@ if (has("termguicolors"))
 endif
 
 
-" PLUGIN VARIABLES "
+" PLUGIN CONFIGURATION "
 
+" TernJS
+let g:tern#command = ["tern"]
+let g:tern#arguments = ["--persistent"]
 " Large file definition, 500 KiB
 let g:hugefile_trigger_size = 0.5
 " Calendar
@@ -125,15 +127,16 @@ let g:ale_linters = { }
 let g:ale_linters.javascript = ['eslint', 'standard']
 let g:ale_linters.typescript = ['tslint', 'tsserver', 'typecheck']
 let g:ale_linters.python = ['pylint']
-let g:ale_linters.go = ['golint']
+let g:ale_linters.go = ['golint', 'gofmt', 'go build']
 let g:ale_fixers = { }
 let g:ale_fixers.javascript = ['eslint']
+let g:ale_fixers.go = ['gofmt', 'goimports']
 " Lightline
 let g:lightline = { }
 let g:lightline.colorscheme = 'one'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
-  \  'right': [ [ 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding' ] ]
+  \  'right': [ [ 'percent', 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding' ] ]
   \ }
 let g:lightline.inactive = { 'left': [['filename']], 'right': [] }
 let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
@@ -211,7 +214,7 @@ else
   autocmd VimEnter * call s:Setup()
 endif
 " Move cursor to last edited line when open file
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 
 " HOTKEYS "
@@ -221,11 +224,6 @@ inoremap <Tab> <C-R>=SmartTab()<CR>
 " Map NERDTreeToggle on Control-b
 map <C-b> :NERDTreeToggle<CR>
 imap <C-b> <C-O>:NERDTreeToggle<CR>
-" Window movement
-" map <C-j> :winc j<CR>
-" map <C-k> :winc k<CR>
-" map <C-h> :winc h<CR>
-" map <C-l> :winc l<CR>
 " Tab movement
 noremap <A-l> :tabn<CR>
 noremap <A-h> :tabp<CR>
