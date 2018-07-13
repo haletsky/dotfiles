@@ -237,7 +237,7 @@ nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
 " Denite
-" map <C-o> :Denite menu<CR>
+map <C-o> :Denite buffer<CR>
 map <C-f> :Denite grep<CR>
 map <C-p> :Denite file_rec<CR>
 " Move to word in file
