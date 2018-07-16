@@ -154,6 +154,7 @@ let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
 " Dark Powered plugins
 let g:deoplete#enable_at_startup = 1
+let g:deoplete#file#enable_buffer_path = 1
 call denite#custom#var('grep', 'command', ['ag'])
 call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--ignore', 'node_modules'])
 call denite#custom#var('grep', 'recursive_opts', [])
@@ -192,7 +193,7 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " AUTOCMDS "
 
-" Do not show numbers in terminal
+" Do not show numbers in terminal and wiki files
 autocmd TermOpen * setlocal nonumber
 autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
@@ -206,7 +207,12 @@ autocmd BufWritePre * %s/\s\+$//e
 autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
 " Update vim buffer if current file changed
 autocmd CursorHold,CursorHoldI * checktime
+" Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
+" Open documentation based on language
+autocmd FileType go map <F1> :GoDoc<CR>
+autocmd FileType javascript map <F1> :TernDoc<CR>
+autocmd FileType typescript map <F1> :TSDoc<CR>
 " Toggle NERDTree at startup
 if v:vim_did_enter
   call s:Setup()
