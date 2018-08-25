@@ -15,6 +15,8 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'jamessan/vim-gnupg'
+Plug 'rhysd/vim-grammarous'
 " Programming
 Plug 'airblade/vim-gitgutter'
 Plug 'moll/vim-node'
@@ -22,6 +24,7 @@ Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'mhartington/nvim-typescript'
+Plug 'HerringtonDarkholme/yats.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -93,6 +96,8 @@ endif
 
 " PLUGIN CONFIGURATION "
 
+let g:grammarous#use_vim_spelllang=1
+let g:grammarous#languagetool_cmd = 'languagetool'
 " TernJS
 let g:tern#command = ["tern"]
 let g:tern#arguments = ["--persistent"]
