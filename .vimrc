@@ -134,21 +134,22 @@ let g:ale_linters.typescript = ['tslint', 'tsserver', 'typecheck']
 let g:ale_linters.python = ['pylint']
 let g:ale_linters.go = ['golint', 'gofmt', 'go build']
 let g:ale_fixers = { }
-let g:ale_fixers.javascript = ['eslint']
+let g:ale_fixers.javascript = ['eslint', 'standard']
 let g:ale_fixers.go = ['gofmt', 'goimports']
 " Lightline
 let g:lightline = { }
 let g:lightline.colorscheme = 'one'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
-  \  'right': [ [ 'percent', 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding' ] ]
+  \  'right': [ [ 'percent', 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding', 'buffersize' ] ]
   \ }
 let g:lightline.inactive = { 'left': [['filename']], 'right': [] }
 let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
 let g:lightline.component_expand = {
   \  'linter_warnings': 'LightlineLinterWarnings',
   \  'linter_errors':   'LightlineLinterErrors',
-  \  'linter_ok':       'LightlineLinterOK'
+  \  'linter_ok':       'LightlineLinterOK',
+  \  'buffersize':      'FileSize'
   \ }
 let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
 let g:lightline.tab_component_function = { 'title': 'TabTitle' }
@@ -320,4 +321,26 @@ function! TabTitle(...)
     let title = '᚛ Terminal ᚜'
   endif
   return title
+endfunction
+
+function! FileSize() abort
+    let l:bytes = getfsize(expand('%p'))
+    if (l:bytes >= 1024)
+        let l:kbytes = l:bytes / 1025
+    endif
+    if (exists('kbytes') && l:kbytes >= 1000)
+        let l:mbytes = l:kbytes / 1000
+    endif
+
+    if l:bytes <= 0
+        return '0'
+    endif
+
+    if (exists('mbytes'))
+        return l:mbytes . 'MB'
+    elseif (exists('kbytes'))
+        return l:kbytes . ' KB'
+    else
+        return l:bytes . ' B'
+    endif
 endfunction
