@@ -7787,7 +7787,7 @@ zoom`.split('\n')
 const { resolve } = require('path')
 const { renameSync, readdirSync } = require('fs')
 
-const path = resolve(process.argv[1], process.argv[2])
+const path = resolve(process.cwd(), process.argv[2])
 
 const trail = (p = '') => p[p.length - 1] === '/' ? p : p.concat('/')
 const getExtension = (f = '', i = f.indexOf('.')) => f.substring(i > -1 ? i : f.length)
