@@ -7,6 +7,7 @@ Plug 'itchyny/calendar.vim'
 Plug 'ryanss/vim-hackernews'
 Plug 'vimwiki/vimwiki'
 " Functionality
+" Plug 'aurieh/discord.nvim', { 'do': ':UpdateRemotePlugins'}
 Plug 'docunext/closetag.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'mhinz/vim-hugefile'
@@ -32,6 +33,7 @@ Plug 'fatih/vim-go', { 'do': 'GoUpdateBinaries' }
 Plug 'ternjs/tern_for_vim'
 Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install --global tern' }
 Plug 'zchee/deoplete-go', { 'do': 'make' }
+Plug 'jparise/vim-graphql'
 call plug#end()
 
 
@@ -95,8 +97,8 @@ endif
 
 
 " PLUGIN CONFIGURATION "
-
-let g:grammarous#use_vim_spelllang=1
+" let g:discord_activate_on_enter = 0
+let g:grammarous#use_vim_spelllang = 1
 let g:grammarous#languagetool_cmd = 'languagetool'
 " TernJS
 let g:tern#command = ["tern"]
