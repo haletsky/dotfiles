@@ -1,7 +1,7 @@
 ## System:
 - [Shell](https://github.com/robbyrussell/oh-my-zsh#prerequisites)
 - [Terminal Prompt](https://github.com/ergenekonyigit/lambda-gitster)
-- [Terminal Fonts](https://github.com/mozilla/Fira)
+- [Terminal Fonts](https://github.com/tonsky/FiraCode)
 - [System Theme](https://github.com/nana-4/materia-theme)
 - [System Icons](https://github.com/snwh/paper-icon-theme)
 - [System Fonts](https://fonts.google.com/specimen/Noto+Sans)

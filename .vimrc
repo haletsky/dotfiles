@@ -146,7 +146,10 @@ let g:lightline.active = {
   \  'right': [ [ 'percent', 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding', 'buffersize' ] ]
   \ }
 let g:lightline.inactive = { 'left': [['filename']], 'right': [] }
-let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
+let g:lightline.component_function = {
+		\ 'readonly': 'LightlineReadonly',
+		\ 'gitbranch': 'LightlineFugitive'
+    \ }
 let g:lightline.component_expand = {
   \  'linter_warnings': 'LightlineLinterWarnings',
   \  'linter_errors':   'LightlineLinterErrors',
@@ -156,6 +159,8 @@ let g:lightline.component_expand = {
 let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
 let g:lightline.tab_component_function = { 'title': 'TabTitle' }
 let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
+let g:lightline.tabline_separator = { 'left': '', 'right': '' }
+let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '৷', 'right': '৷' }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
@@ -349,4 +354,16 @@ function! FileSize() abort
     else
         return l:bytes . ' B'
     endif
+endfunction
+
+function! LightlineReadonly()
+  return &readonly ? '' : ''
+endfunction
+
+function! LightlineFugitive()
+  if exists('*fugitive#head')
+    let branch = fugitive#head()
+    return branch !=# '' ? ' '.branch : ''
+  endif
+  return ''
 endfunction
