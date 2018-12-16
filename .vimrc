@@ -203,6 +203,7 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " Do not show numbers in terminal and wiki files
 autocmd TermOpen * setlocal nonumber
+autocmd WinEnter term://* execute "startinsert"
 autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
@@ -256,6 +257,9 @@ map <C-f> :Denite grep<CR>
 map <C-p> :Denite file_rec<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
+map <F2> :ALEGoToDefinition<CR>
+map <F3> :ALEFindReferences<CR>
+map <F4> :GitGutterNextHunk<CR>
 
 
 " FUNCTIONS "
