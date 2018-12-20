@@ -7,7 +7,6 @@ Plug 'itchyny/calendar.vim'
 Plug 'ryanss/vim-hackernews'
 Plug 'vimwiki/vimwiki'
 " Functionality
-" Plug 'aurieh/discord.nvim', { 'do': ':UpdateRemotePlugins'}
 Plug 'docunext/closetag.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'mhinz/vim-hugefile'
@@ -24,7 +23,7 @@ Plug 'moll/vim-node'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
-Plug 'mhartington/nvim-typescript'
+Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
