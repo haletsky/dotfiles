@@ -24,7 +24,6 @@ Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
-Plug 'HerringtonDarkholme/yats.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -137,6 +136,7 @@ let g:ale_linters.go = ['golint', 'gofmt', 'go build']
 let g:ale_fixers = { }
 let g:ale_fixers.javascript = ['eslint', 'standard']
 let g:ale_fixers.go = ['gofmt', 'goimports']
+let g:ale_fixers.typescript = ['tslint']
 " Lightline
 let g:lightline = { }
 let g:lightline.colorscheme = 'one'
@@ -207,7 +207,6 @@ call denite#custom#var('menu', 'menus', s:menus)
 
 " Do not show numbers in terminal and wiki files
 autocmd TermOpen * setlocal nonumber
-autocmd WinEnter term://* execute "startinsert"
 autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
@@ -256,7 +255,6 @@ nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
 " Denite
-map <C-o> :Denite buffer<CR>
 map <C-f> :Denite grep<CR>
 map <C-p> :Denite file_rec<CR>
 " Move to word in file
