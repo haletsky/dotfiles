@@ -95,6 +95,8 @@ endif
 
 
 " PLUGIN CONFIGURATION "
+
+let g:nvim_typescript#diagnostics_enable = 0
 " let g:discord_activate_on_enter = 0
 let g:grammarous#use_vim_spelllang = 1
 let g:grammarous#languagetool_cmd = 'languagetool'
@@ -262,6 +264,11 @@ map f <Plug>(easymotion-bd-W)
 map <F2> :ALEGoToDefinition<CR>
 map <F3> :ALEFindReferences<CR>
 map <F4> :GitGutterNextHunk<CR>
+
+
+" COMMANDS "
+
+command PrettyJSON %!python -m json.tool
 
 
 " FUNCTIONS "
