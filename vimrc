@@ -371,3 +371,5 @@ function! LightlineFugitive()
   endif
   return ''
 endfunction
+
+let g:nvim_typescript#diagnostics_enable = 0
