@@ -7785,22 +7785,34 @@ zoology
 zoom`.split('\n')
 
 const { resolve } = require('path')
-const { renameSync, readdirSync } = require('fs')
+const { renameSync, readdirSync, statSync } = require('fs')
 
 const path = resolve(process.cwd(), process.argv[2])
 
 const trail = (p = '') => p[p.length - 1] === '/' ? p : p.concat('/')
 const getExtension = (f = '', i = f.indexOf('.')) => f.substring(i > -1 ? i : f.length)
-const getRandomWord = () => words[Math.round((Math.random() * words.length))]
+const getRandomWord = () => words[Math.round((Math.random() * (words.length - 1)))]
+const exist = p => { try { return Boolean(statSync(p)) } catch (e) { return false } }
 const files = readdirSync(path, { withFileTypes: true })
+const newUniquePath = (path, ext) => {
+  let newPath
+
+  do {
+    const newFilename = [1, 2]
+      .map(getRandomWord)
+      .reduce((p, c) => `${p}-${c}`)
+    newPath = `${trail(path)}${newFilename}${ext}`
+  } while(exist(newPath))
+
+  return newPath
+}
 
 files.forEach(d => {
   if (!d.isFile()) return
+  if (d.name.match(/^\w+[-]\w+.\w+$/)) return
 
-  const newFilename = [1, 2]
-    .map(getRandomWord)
-    .reduce((p, c) => `${p}-${c}`)
   const oldPath = `${trail(path)}${d.name}`
-  const newPath = `${trail(path)}${newFilename}${getExtension(d.name)}`
+  const newPath = newUniquePath(path, getExtension(d.name))
+
   renameSync(oldPath, newPath)
 })
