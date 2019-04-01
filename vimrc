@@ -4,7 +4,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'rakr/vim-one'
 " Apps
 Plug 'itchyny/calendar.vim'
-Plug 'ryanss/vim-hackernews'
 Plug 'vimwiki/vimwiki'
 " Functionality
 Plug 'docunext/closetag.vim'
@@ -14,24 +13,15 @@ Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'jamessan/vim-gnupg'
-Plug 'rhysd/vim-grammarous'
 " Programming
 Plug 'airblade/vim-gitgutter'
-Plug 'moll/vim-node'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
-Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
 Plug 'tpope/vim-fugitive'
-Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'fatih/vim-go', { 'do': 'GoUpdateBinaries' }
-Plug 'ternjs/tern_for_vim'
-Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install --global tern' }
-Plug 'zchee/deoplete-go', { 'do': 'make' }
 Plug 'jparise/vim-graphql'
+Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': { -> coc#util#install() } }
 call plug#end()
 
 
@@ -96,13 +86,6 @@ endif
 
 " PLUGIN CONFIGURATION "
 
-let g:nvim_typescript#diagnostics_enable = 0
-" let g:discord_activate_on_enter = 0
-let g:grammarous#use_vim_spelllang = 1
-let g:grammarous#languagetool_cmd = 'languagetool'
-" TernJS
-let g:tern#command = ["tern"]
-let g:tern#arguments = ["--persistent"]
 " Large file definition, 500 KiB
 let g:hugefile_trigger_size = 0.5
 " Calendar
@@ -125,31 +108,18 @@ let g:NERDTreeIndicatorMapCustom = {
     \ }
 " Enable JSX syntax in .js files
 let g:jsx_ext_required = 0
-" ALE linter
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-let g:ale_fix_on_save = 1
-let g:ale_linters = { }
-let g:ale_linters.javascript = ['eslint', 'standard']
-let g:ale_linters.typescript = ['tslint', 'tsserver', 'typecheck']
-let g:ale_linters.python = ['pylint']
-let g:ale_linters.go = ['golint', 'gofmt', 'go build']
-let g:ale_fixers = { }
-let g:ale_fixers.javascript = ['eslint', 'standard']
-let g:ale_fixers.go = ['gofmt', 'goimports']
-let g:ale_fixers.typescript = ['tslint']
 " Lightline
 let g:lightline = { }
 let g:lightline.colorscheme = 'one'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
-  \  'right': [ [ 'percent', 'lineinfo' ], [ 'linter_warnings', 'linter_errors', 'linter_ok'], [ 'fileformat', 'fileencoding', 'buffersize' ] ]
+  \  'right': [ [ 'percent', 'lineinfo' ], [ 'cocstatus'], [ 'fileformat', 'fileencoding', 'buffersize' ] ]
   \ }
 let g:lightline.inactive = { 'left': [['filename']], 'right': [] }
 let g:lightline.component_function = {
 		\ 'readonly': 'LightlineReadonly',
-		\ 'gitbranch': 'LightlineFugitive'
+		\ 'gitbranch': 'LightlineFugitive',
+    \ 'cocstatus': 'StatusDiagnostic'
     \ }
 let g:lightline.component_expand = {
   \  'linter_warnings': 'LightlineLinterWarnings',
@@ -166,44 +136,6 @@ let g:lightline.subseparator = { 'left': '৷', 'right': '৷' }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
-" Dark Powered plugins
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#file#enable_buffer_path = 1
-call denite#custom#var('grep', 'command', ['ag'])
-call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--ignore', 'node_modules'])
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', [])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
-call denite#custom#var('file_rec', 'command', ['scantree.py', '--ignore', &wildignore])
-call denite#custom#map(
-      \ 'insert',
-      \ '<C-j>',
-      \ '<denite:move_to_next_line>',
-      \ 'noremap'
-      \)
-call denite#custom#map(
-      \ 'insert',
-      \ '<C-k>',
-      \ '<denite:move_to_previous_line>',
-      \ 'noremap'
-      \)
-let s:menus = {}
-let s:menus.confs = { }
-let s:menus.confs.description = 'Configuration files'
-let s:menus.confs.file_candidates = [
-  \ ['zshrc', '~/.zshrc', 'sjoi'],
-  \ ['vimrc', '~/.vimrc'],
-  \ ]
-let s:menus.apps = { }
-let s:menus.apps.description = 'List of applicatons.'
-let s:menus.apps.command_candidates = [
-  \ ['Vimwiki', 'tabe | tabm | VimwikiIndex'],
-  \ ['Calendar', 'tabe | tabm | Calendar'],
-  \ ['Hacker News', 'tabe | tabm | setlocal nonumber | HackerNews']
-  \ ]
-call denite#custom#var('menu', 'menus', s:menus)
-
 
 " AUTOCMDS "
 
@@ -213,8 +145,6 @@ autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" Update status line when did lint
-autocmd User ALELint call lightline#update()
 " Remove traling spaces after save
 autocmd BufWritePre * %s/\s\+$//e
 " Load dictinary according to filetype
@@ -223,10 +153,6 @@ autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
 autocmd CursorHold,CursorHoldI * checktime
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
-" Open documentation based on language
-autocmd FileType go map <F1> :GoDoc<CR>
-autocmd FileType javascript map <F1> :TernDoc<CR>
-autocmd FileType typescript map <F1> :TSDoc<CR>
 " Toggle NERDTree at startup
 if v:vim_did_enter
   call s:Setup()
@@ -240,7 +166,6 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 " HOTKEYS "
 
 inoremap <Tab> <C-R>=SmartTab()<CR>
-" Keybindings
 " Map NERDTreeToggle on Control-b
 map <C-b> :NERDTreeToggle<CR>
 imap <C-b> <C-O>:NERDTreeToggle<CR>
@@ -256,28 +181,29 @@ tnoremap <C-j> <C-\><C-n>
 nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
-" Denite
-map <C-f> :Denite grep<CR>
-map <C-p> :Denite file_rec<CR>
+" Finders
+map <C-f> :CocList -I grep<CR>
+map <C-p> :CocList files<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
-map <F2> :ALEGoToDefinition<CR>
-map <F3> :ALEFindReferences<CR>
-map <F4> :GitGutterNextHunk<CR>
+map <F1> :call CocAction('doHover')<CR>
+map <F2> :call CocAction('jumpDefinition')<CR>
+map <F3> :call CocAction('jumpReferences')<CR>
+map <F4> :Gstatus<CR>
+map <F5> :Gllog -- %<CR>
+map gl $
+map gh 0
+map <C-T> :terminal<CR>
 
 
 " COMMANDS "
 
 command PrettyJSON %!python -m json.tool
 
-
 " FUNCTIONS "
 
 function! s:Setup()
   if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
-    execute 'NERDTreeToggle' argv()[0]
-    winc p
-    ene
     tabe
     execute 'terminal'
     setlocal nonumber
@@ -292,28 +218,10 @@ function! s:Setup()
     execute 'VimwikiDiaryIndex'
     tabm 0
     tabn
+    ene
+    execute 'NERDTree' argv()[0]
+    execute 'NERDTreeClose'
   endif
-endfunction
-
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ✱', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ✖', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✔' : ''
 endfunction
 
 function! SmartTab()
@@ -372,4 +280,21 @@ function! LightlineFugitive()
   return ''
 endfunction
 
-let g:nvim_typescript#diagnostics_enable = 0
+function! StatusDiagnostic() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) | return '✔' | endif
+  let msgs = []
+  if get(info, 'error', 0)
+    call add(msgs, info['error'] . ' ✖ ')
+  endif
+  if get(info, 'warning', 0)
+    call add(msgs, info['warning'] . ' ✱ ')
+  endif
+  if get(info, 'information', 0)
+    call add(msgs, info['information'] . ' ▲ ')
+  endif
+  if get(info, 'hint', 0)
+    call add(msgs, info['hint'] . ' H ')
+  endif
+  return join(msgs, ' ')
+endfunction
