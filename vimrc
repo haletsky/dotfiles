@@ -137,6 +137,7 @@ let g:lightline.subseparator = { 'left': '৷', 'right': '৷' }
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
 
+
 " AUTOCMDS "
 
 " Do not show numbers in terminal and wiki files
@@ -153,14 +154,10 @@ autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
 autocmd CursorHold,CursorHoldI * checktime
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
-" Toggle NERDTree at startup
-if v:vim_did_enter
-  call s:Setup()
-else
-  autocmd VimEnter * call s:Setup()
-endif
 " Move cursor to last edited line when open file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+" Setup at startup
+autocmd VimEnter * call s:Setup()
 
 
 " HOTKEYS "
@@ -184,6 +181,8 @@ map <C-c> <Plug>NERDCommenterToggle
 " Finders
 map <C-f> :CocList -I grep<CR>
 map <C-p> :CocList files<CR>
+map <C-g> :CocList outline<CR>
+map <C-q> :call CocAction('doQuickfix')<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
 map <F1> :call CocAction('doHover')<CR>
@@ -204,23 +203,18 @@ command PrettyJSON %!python -m json.tool
 
 function! s:Setup()
   if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
+    execute 'cd' argv()[0]
     tabe
     execute 'terminal'
     setlocal nonumber
     execute 'VimwikiTabIndex'
     execute 'Calendar -view=year -split=vertical -width=31'
     wincmd w
-    setlocal colorcolumn=81
-    wincmd v
-    vertical resize 80
-    setlocal wrap
-    wincmd l
     execute 'VimwikiDiaryIndex'
     tabm 0
     tabn
     ene
-    execute 'NERDTree' argv()[0]
-    execute 'NERDTreeClose'
+    call lightline#update()
   endif
 endfunction
 
