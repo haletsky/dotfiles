@@ -12,7 +12,6 @@ Plug 'mhinz/vim-hugefile'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
-Plug 'Shougo/denite.nvim'
 " Programming
 Plug 'airblade/vim-gitgutter'
 Plug 'mxw/vim-jsx'
