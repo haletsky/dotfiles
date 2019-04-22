@@ -46,7 +46,7 @@ try
 catch
 endtry
 set nocompatible
-set number
+set nonumber
 set autoread
 set langmenu=en
 set wildmenu
@@ -73,6 +73,7 @@ set cursorline
 set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
 set background=dark
 set completeopt-=preview
+set guifont=Fira\ Code\ Regular:h8
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -93,6 +94,7 @@ let g:calendar_first_day = 'monday'
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 " NERDTree
+let g:NERDDefaultAlign = 'left'
 let g:NERDTreeChDirMode=1
 let g:NERDTreeShowHidden=1
 let g:NERDSpaceDelims = 1
