@@ -21,6 +21,12 @@ Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
 Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': { -> coc#util#install() } }
+Plug 'neoclide/coc-yank', { 'do': 'npm install' }
+Plug 'neoclide/coc-tsserver', { 'do': 'npm install' }
+Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
+Plug 'josa42/coc-go', { 'do': 'npm install' }
+Plug 'neoclide/coc-lists', { 'do': 'npm install' }
+Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 call plug#end()
 
 
@@ -199,6 +205,7 @@ map <C-T> :terminal<CR>
 " COMMANDS "
 
 command PrettyJSON %!python -m json.tool
+" command Diff !kitty @ new-window --new-tab --cwd $(pwd) --no-response git difftool --no-symlinks --dir-diff
 
 " FUNCTIONS "
 
