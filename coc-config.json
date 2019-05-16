@@ -1,0 +1,11 @@
+{
+  "list.source.grep.command": "ag",
+  "coc.preferences.hoverTarget": "float",
+  "codeLens.enable": true,
+  "coc.source.gocode.enable": true,
+  "coc.preferences.formatOnType": true,
+  "coc.preferences.formatOnSaveFiletypes": ["go"],
+  "git.addedSign.text": "┃",
+  "git.removedSign.text": "┃",
+  "git.changedSign.text": "┃"
+}

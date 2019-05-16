@@ -13,7 +13,6 @@ Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 " Programming
-Plug 'airblade/vim-gitgutter'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
@@ -26,6 +25,7 @@ Plug 'neoclide/coc-tsserver', { 'do': 'npm install' }
 Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
 Plug 'josa42/coc-go', { 'do': 'npm install' }
 Plug 'neoclide/coc-lists', { 'do': 'npm install' }
+Plug 'neoclide/coc-git', { 'do': 'npm install' }
 Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 call plug#end()
 
@@ -79,6 +79,7 @@ set cursorline
 set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
 set background=dark
 set completeopt-=preview
+set signcolumn=auto:2
 set guifont=Fira\ Code\ Regular:h8
 filetype plugin on
 filetype indent on
@@ -145,6 +146,14 @@ let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
 
 
+" HIGHLIGHTS
+
+highlight GruvboxGreenSign guifg=#98c379
+highlight GruvboxRedSign guifg=#e06c75
+highlight GruvboxAquaSign guifg=#e5c07b
+highlight HighlightedyankRegion term=bold guifg=#000000 guibg=#e5c07b
+
+
 " AUTOCMDS "
 
 " Do not show numbers in terminal and wiki files
@@ -206,6 +215,7 @@ map <C-T> :terminal<CR>
 
 command PrettyJSON %!python -m json.tool
 " command Diff !kitty @ new-window --new-tab --cwd $(pwd) --no-response git difftool --no-symlinks --dir-diff
+
 
 " FUNCTIONS "
 
