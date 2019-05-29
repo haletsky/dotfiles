@@ -12,6 +12,7 @@ Plug 'mhinz/vim-hugefile'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
+Plug 'liuchengxu/vim-which-key'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
@@ -91,7 +92,21 @@ if (has("termguicolors"))
 endif
 
 
+
 " PLUGIN CONFIGURATION "
+
+" Which-key
+let g:which_key_map = {
+  \ 'name': 'Menu',
+  \ 'd': [':call CocAction("jumpDefinition")', 'Jump to definition'],
+  \ 'r': [':call CocAction("jumpReferences")', 'Jump to references'],
+  \ 'l': [':Gllog -- %', 'Git log'],
+  \ 'j': ['%!python -m json.tool', 'Pretty json'],
+  \ 's': [':Gstatus', 'Git status'],
+  \ 'p': [':Gpush', 'Git push'],
+  \ 'P': [':Gpull', 'Git pull'],
+  \ 'b': [':Gblame', 'Git blame'],
+  \ }
 
 " Large file definition, 500 KiB
 let g:hugefile_trigger_size = 0.5
@@ -199,6 +214,8 @@ map <C-f> :CocList -I grep<CR>
 map <C-p> :CocList files<CR>
 map <C-g> :CocList outline<CR>
 map <C-q> :call CocAction('doQuickfix')<CR>
+" Which-key menu
+nnoremap z :WhichKeyVisual! g:which_key_map<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
 map <F1> :call CocAction('doHover')<CR>
