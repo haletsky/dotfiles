@@ -96,16 +96,20 @@ endif
 " PLUGIN CONFIGURATION "
 
 " Which-key
+let g:which_key_vertical = 1
+let g:which_key_use_floating_win = 0
+let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
-  \ 'name': 'Menu',
-  \ 'd': [':call CocAction("jumpDefinition")', 'Jump to definition'],
-  \ 'r': [':call CocAction("jumpReferences")', 'Jump to references'],
-  \ 'l': [':Gllog -- %', 'Git log'],
+  \ 'b': [':Gblame', 'Git blame'],
+  \ 'c': [':Git checkout', 'Git checkout'],
+  \ 'd': [':Gdiff', 'Git diff'],
   \ 'j': ['%!python -m json.tool', 'Pretty json'],
-  \ 's': [':Gstatus', 'Git status'],
+  \ 'l': [':Gllog -- %', 'Git log'],
   \ 'p': [':Gpush', 'Git push'],
   \ 'P': [':Gpull', 'Git pull'],
-  \ 'b': [':Gblame', 'Git blame'],
+  \ 'r': [':call CocAction("jumpReferences")', 'Jump to references'],
+  \ 's': [':Gstatus', 'Git status'],
+  \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ }
 
 " Large file definition, 500 KiB
@@ -189,6 +193,10 @@ autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 " Setup at startup
 autocmd VimEnter * call s:Setup()
+" Which-key
+autocmd! FileType which_key
+autocmd  FileType which_key set laststatus=0 noshowmode noruler
+  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 
 
 " HOTKEYS "
@@ -215,14 +223,12 @@ map <C-p> :CocList files<CR>
 map <C-g> :CocList outline<CR>
 map <C-q> :call CocAction('doQuickfix')<CR>
 " Which-key menu
-nnoremap z :WhichKeyVisual! g:which_key_map<CR>
+nnoremap m :WhichKeyVisual! g:which_key_map<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
 map <F1> :call CocAction('doHover')<CR>
 map <F2> :call CocAction('jumpDefinition')<CR>
 map <F3> :call CocAction('jumpReferences')<CR>
-map <F4> :Gstatus<CR>
-map <F5> :Gllog -- %<CR>
 map gl $
 map gh 0
 map <C-T> :terminal<CR>
