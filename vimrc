@@ -13,6 +13,7 @@ Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'liuchengxu/vim-which-key'
+Plug 'terryma/vim-multiple-cursors'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
@@ -107,7 +108,7 @@ let g:which_key_map = {
   \ 'l': [':Gllog -- %', 'Git log'],
   \ 'p': [':Gpush', 'Git push'],
   \ 'P': [':Gpull', 'Git pull'],
-  \ 'r': [':call CocAction("jumpReferences")', 'Jump to references'],
+  \ 'r': [':call CocAction("rename")', 'Rename a variable'],
   \ 's': [':Gstatus', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ }
@@ -195,8 +196,8 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd VimEnter * call s:Setup()
 " Which-key
 autocmd! FileType which_key
-autocmd  FileType which_key set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+autocmd  FileType which_key set laststatus=0
+  \| autocmd BufLeave <buffer> set laststatus=2
 
 
 " HOTKEYS "
