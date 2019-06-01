@@ -102,17 +102,18 @@ let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
   \ 'b': [':Gblame', 'Git blame'],
-  \ 'c': [':Git checkout', 'Git checkout'],
+  \ 'l': [':CocList commits', 'Git log'],
+  \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'd': [':Gdiff', 'Git diff'],
   \ 'j': ['%!python -m json.tool', 'Pretty json'],
-  \ 'l': [':Gllog -- %', 'Git log'],
-  \ 'p': [':Gpush', 'Git push'],
-  \ 'P': [':Gpull', 'Git pull'],
+  \ 'p': [':Gpull', 'Git pull'],
+  \ 'P': [':Gpush', 'Git push'],
   \ 'r': [':call CocAction("rename")', 'Rename a variable'],
   \ 's': [':Gstatus', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
+  \ 'y': [':CocList yank', 'Copy history'],
   \ }
-
+"\ 'l': [':Gllog -- %', 'Git log'],
 " Large file definition, 500 KiB
 let g:hugefile_trigger_size = 0.5
 " Calendar
@@ -196,8 +197,8 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd VimEnter * call s:Setup()
 " Which-key
 autocmd! FileType which_key
-autocmd  FileType which_key set laststatus=0
-  \| autocmd BufLeave <buffer> set laststatus=2
+autocmd  FileType which_key setlocal laststatus=0
+  \| autocmd BufLeave <buffer> setlocal laststatus=2
 
 
 " HOTKEYS "
