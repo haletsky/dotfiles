@@ -8,12 +8,12 @@ Plug 'vimwiki/vimwiki'
 " Functionality
 Plug 'docunext/closetag.vim'
 Plug 'easymotion/vim-easymotion'
-Plug 'mhinz/vim-hugefile'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'tpope/vim-surround'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
@@ -93,7 +93,6 @@ if (has("termguicolors"))
 endif
 
 
-
 " PLUGIN CONFIGURATION "
 
 " Which-key
@@ -114,8 +113,6 @@ let g:which_key_map = {
   \ 'y': [':CocList yank', 'Copy history'],
   \ }
 "\ 'l': [':Gllog -- %', 'Git log'],
-" Large file definition, 500 KiB
-let g:hugefile_trigger_size = 0.5
 " Calendar
 let g:calendar_views = ['year', 'month', 'day', 'clock']
 let g:calendar_first_day = 'monday'
@@ -167,7 +164,7 @@ let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
 
 
-" HIGHLIGHTS
+" HIGHLIGHTS "
 
 highlight GruvboxGreenSign guifg=#98c379
 highlight GruvboxRedSign guifg=#e06c75
