@@ -14,6 +14,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
+Plug 'mbbill/undotree'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
@@ -101,15 +102,16 @@ let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
   \ 'b': [':Gblame', 'Git blame'],
-  \ 'l': [':CocList commits', 'Git log'],
-  \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'd': [':Gdiff', 'Git diff'],
   \ 'j': ['%!python -m json.tool', 'Pretty json'],
+  \ 'l': [':CocList commits', 'Git log'],
+  \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'p': [':Gpull', 'Git pull'],
   \ 'P': [':Gpush', 'Git push'],
   \ 'r': [':call CocAction("rename")', 'Rename a variable'],
   \ 's': [':Gstatus', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
+  \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
   \ 'y': [':CocList yank', 'Copy history'],
   \ }
 "\ 'l': [':Gllog -- %', 'Git log'],
@@ -194,8 +196,11 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd VimEnter * call s:Setup()
 " Which-key
 autocmd! FileType which_key
-autocmd  FileType which_key setlocal laststatus=0
-  \| autocmd BufLeave <buffer> setlocal laststatus=2
+autocmd  FileType which_key set laststatus=0
+  \| autocmd BufLeave <buffer> set laststatus=2
+autocmd! FileType undotree
+autocmd  FileType undotree set laststatus=0
+  \| autocmd BufLeave <buffer> set laststatus=2
 
 
 " HOTKEYS "
