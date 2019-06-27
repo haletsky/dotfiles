@@ -16,6 +16,7 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
 Plug 'mbbill/undotree'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
