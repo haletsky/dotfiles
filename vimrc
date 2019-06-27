@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugins')
 " Appearance
 Plug 'itchyny/lightline.vim'
 Plug 'rakr/vim-one'
+Plug 'ryanoasis/vim-devicons'
 " Apps
 Plug 'itchyny/calendar.vim'
 Plug 'vimwiki/vimwiki'
@@ -22,7 +23,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
-Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': { -> coc#util#install() } }
+Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': './install.sh' }
 Plug 'neoclide/coc-yank', { 'do': 'npm install' }
 Plug 'neoclide/coc-tsserver', { 'do': 'npm install' }
 Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
@@ -30,6 +31,7 @@ Plug 'josa42/coc-go', { 'do': 'npm install' }
 Plug 'neoclide/coc-lists', { 'do': 'npm install' }
 Plug 'neoclide/coc-git', { 'do': 'npm install' }
 Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
+Plug 'posva/vim-vue'
 call plug#end()
 
 
@@ -83,7 +85,6 @@ set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
 set background=dark
 set completeopt-=preview
 set signcolumn=auto:2
-set guifont=Fira\ Code\ Regular:h8
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -97,13 +98,12 @@ endif
 " PLUGIN CONFIGURATION "
 
 " Which-key
-let g:which_key_vertical = 1
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
   \ 'b': [':Gblame', 'Git blame'],
   \ 'd': [':Gdiff', 'Git diff'],
-  \ 'j': ['%!python -m json.tool', 'Pretty json'],
+  \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'l': [':CocList commits', 'Git log'],
   \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'p': [':Gpull', 'Git pull'],
@@ -120,18 +120,24 @@ let g:calendar_views = ['year', 'month', 'day', 'clock']
 let g:calendar_first_day = 'monday'
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
+" Devicons
+let g:WebDevIconsUnicodeDecorateFolderNodes = v:true
+let g:DevIconsEnableFoldersOpenClose = 1
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 " NERDTree
+let g:NERDTreeDirArrowExpandable="\u00a0"
+let g:NERDTreeDirArrowCollapsible="\u00a0"
 let g:NERDDefaultAlign = 'left'
-let g:NERDTreeChDirMode=1
-let g:NERDTreeShowHidden=1
+let g:NERDTreeChDirMode = 1
+let g:NERDTreeShowHidden = 1
 let g:NERDSpaceDelims = 1
 let g:NERDTreeMarkBookmarks = 1
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "◉",
-    \ "Staged"    : "●",
-    \ "Untracked" : "○",
-    \ "Dirty"     : "◈",
+    \ "Modified"  : "\ue371",
+    \ "Staged"    : "\ue39b",
+    \ "Untracked" : "\ue38d",
+    \ "Dirty"     : "\ue371",
     \ "Clean"     : "✔︎",
     \ }
 " Enable JSX syntax in .js files
@@ -168,10 +174,8 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 " HIGHLIGHTS "
 
-highlight GruvboxGreenSign guifg=#98c379
-highlight GruvboxRedSign guifg=#e06c75
-highlight GruvboxAquaSign guifg=#e5c07b
 highlight HighlightedyankRegion term=bold guifg=#000000 guibg=#e5c07b
+highlight! link NERDTreeFlags NERDTreeDir
 
 
 " AUTOCMDS "
@@ -274,13 +278,13 @@ endfunction
 function! TabTitle(...)
  let title = a:1
   if a:1 == 1
-    let title = '᚛ Home     ᚜'
+    let title = '   '
   endif
   if a:1 == 2
-    let title = '᚛ Editor   ᚜'
+    let title = '   '
   endif
   if a:1 == 3
-    let title = '᚛ Terminal ᚜'
+    let title = '   '
   endif
   return title
 endfunction
