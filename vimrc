@@ -33,6 +33,7 @@ Plug 'neoclide/coc-lists', { 'do': 'npm install' }
 Plug 'neoclide/coc-git', { 'do': 'npm install' }
 Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 Plug 'posva/vim-vue'
+Plug 'neoclide/coc-vetur', { 'do': 'npm install' }
 call plug#end()
 
 
@@ -72,6 +73,7 @@ set autoread
 set clipboard+=unnamedplus
 set undodir=~/.vim/undo-dir
 set undofile
+set updatetime=800
 set laststatus=2
 set noswapfile
 set nobackup
@@ -109,7 +111,9 @@ let g:which_key_map = {
   \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'p': [':Gpull', 'Git pull'],
   \ 'P': [':Gpush', 'Git push'],
-  \ 'r': [':call CocAction("rename")', 'Rename a variable'],
+  \ 'r': [':call CocActionAsync("rename")', 'Rename a variable'],
+  \ 'f': [':call CocActionAsync("fold")', 'Fold'],
+  \ 'i': [':call CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
   \ 's': [':Gstatus', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
@@ -206,6 +210,7 @@ autocmd  FileType which_key set laststatus=0
 autocmd! FileType undotree
 autocmd  FileType undotree set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
 " HOTKEYS "
