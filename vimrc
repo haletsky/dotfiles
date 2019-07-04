@@ -73,7 +73,7 @@ set autoread
 set clipboard+=unnamedplus
 set undodir=~/.vim/undo-dir
 set undofile
-set updatetime=800
+set updatetime=1000
 set laststatus=2
 set noswapfile
 set nobackup
@@ -127,24 +127,26 @@ let g:calendar_first_day = 'monday'
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 " Devicons
 let g:WebDevIconsUnicodeDecorateFolderNodes = v:true
+let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:DevIconsEnableFoldersOpenClose = 1
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+" NERD Commenter
+let g:NERDDefaultAlign = "left"
+let g:NERDSpaceDelims = 1
 " NERDTree
 let g:NERDTreeDirArrowExpandable="\u00a0"
 let g:NERDTreeDirArrowCollapsible="\u00a0"
-let g:NERDDefaultAlign = 'left'
 let g:NERDTreeChDirMode = 1
 let g:NERDTreeShowHidden = 1
-let g:NERDSpaceDelims = 1
 let g:NERDTreeMarkBookmarks = 1
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "\ue371",
-    \ "Staged"    : "\ue39b",
-    \ "Untracked" : "\ue38d",
-    \ "Dirty"     : "\ue371",
-    \ "Clean"     : "✔︎",
-    \ }
+  \ "Modified"  : "\ue371",
+  \ "Staged"    : "\ue39b",
+  \ "Untracked" : "\ue38d",
+  \ "Dirty"     : "\ue371",
+  \ "Renamed"   : "",
+  \ "Clean"     : "✔︎",
+  \ }
 " Enable JSX syntax in .js files
 let g:jsx_ext_required = 0
 " Lightline
@@ -152,14 +154,19 @@ let g:lightline = { }
 let g:lightline.colorscheme = 'one'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
-  \  'right': [ [ 'percent', 'lineinfo' ], [ 'cocstatus'], [ 'fileformat', 'fileencoding', 'buffersize' ] ]
+  \  'right': [ [ 'percent', 'lineinfo' ], [ 'cocstatus'], [ 'fileformat', 'fileencoding', 'buffersize', 'filetype' ] ]
   \ }
-let g:lightline.inactive = { 'left': [['filename']], 'right': [] }
+let g:lightline.inactive = { 'left': [['mode'], ['filename']], 'right': [] }
+let g:lightline.component = {
+  \ 'filetype': '%{WebDevIconsGetFileTypeSymbol()} ',
+  \ 'relativepath': ' %f'
+  \}
 let g:lightline.component_function = {
-		\ 'readonly': 'LightlineReadonly',
-		\ 'gitbranch': 'LightlineFugitive',
-    \ 'cocstatus': 'StatusDiagnostic'
-    \ }
+  \ 'readonly': 'LightlineReadonly',
+  \ 'mode': 'LightlineMode',
+  \ 'gitbranch': 'LightlineFugitive',
+  \ 'cocstatus': 'StatusDiagnostic'
+  \ }
 let g:lightline.component_expand = {
   \  'linter_warnings': 'LightlineLinterWarnings',
   \  'linter_errors':   'LightlineLinterErrors',
@@ -170,8 +177,8 @@ let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
 let g:lightline.tab_component_function = { 'title': 'TabTitle' }
 let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
 let g:lightline.tabline_separator = { 'left': '', 'right': '' }
-let g:lightline.separator = { 'left': '', 'right': '' }
-let g:lightline.subseparator = { 'left': '৷', 'right': '৷' }
+let g:lightline.separator = { 'left': '', 'right': '' }
+let g:lightline.subseparator = { 'left': '', 'right': '' }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
@@ -193,10 +200,6 @@ autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Remove traling spaces after save
 autocmd BufWritePre * %s/\s\+$//e
-" Load dictinary according to filetype
-autocmd FileType * execute 'set dictionary+=~/.vim/dict/'.&filetype
-" Update vim buffer if current file changed
-autocmd CursorHold,CursorHoldI * checktime
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
 " Move cursor to last edited line when open file
@@ -207,10 +210,8 @@ autocmd VimEnter * call s:Setup()
 autocmd! FileType which_key
 autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
-autocmd! FileType undotree
-autocmd  FileType undotree set laststatus=0
-  \| autocmd BufLeave <buffer> set laststatus=2
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" Highlight word under cursor
+autocmd CursorMoved * silent call CocActionAsync('highlight')
 
 
 " HOTKEYS "
@@ -318,7 +319,7 @@ function! FileSize() abort
 endfunction
 
 function! LightlineReadonly()
-  return &readonly ? '' : ''
+  return &readonly ? '' : ''
 endfunction
 
 function! LightlineFugitive()
@@ -346,4 +347,17 @@ function! StatusDiagnostic() abort
     call add(msgs, info['hint'] . ' H ')
   endif
   return join(msgs, ' ')
+endfunction
+
+function! LightlineMode()
+  return &ft == 'nerdtree' ? '  ' :
+        \ &ft == 'fugitive' ? '  ' :
+        \ &ft == 'git' ? '  ' :
+        \ &ft == 'gitcommit' ? '  ' :
+        \ &ft == 'help' ? '  ' :
+        \ &ft == 'list' ? '   ' :
+        \ &ft == 'undotree' ? '  ' :
+        \ &ft == 'vimwiki' ? '  ' :
+        \ &ft == 'vim-plug' ? '  ' :
+        \ winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
