@@ -1,3 +1,4 @@
+" PLUGINS {{{
 call plug#begin('~/.vim/plugins')
 " Appearance
 Plug 'itchyny/lightline.vim'
@@ -35,10 +36,10 @@ Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 Plug 'posva/vim-vue'
 Plug 'neoclide/coc-vetur', { 'do': 'npm install' }
 call plug#end()
+" }}}
 
 
-" BASE SETTINGS "
-
+" BASE SETTINGS {{{
 if !isdirectory($HOME."/.vim")
   call mkdir($HOME."/.vim", "", 0770)
 endif
@@ -88,6 +89,10 @@ set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
 set background=dark
 set completeopt-=preview
 set signcolumn=auto:2
+set foldenable
+set foldlevelstart=10
+set foldnestmax=10
+set foldmethod=syntax
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -96,10 +101,10 @@ endif
 if (has("termguicolors"))
   set termguicolors
 endif
+" }}}
 
 
-" PLUGIN CONFIGURATION "
-
+" PLUGIN CONFIGURATION {{{
 " Which-key
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
@@ -182,16 +187,16 @@ let g:lightline.subseparator = { 'left': '', 'right': '' }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
+" }}}
 
 
-" HIGHLIGHTS "
-
+" HIGHLIGHTS {{{
 highlight HighlightedyankRegion term=bold guifg=#000000 guibg=#e5c07b
 highlight! link NERDTreeFlags NERDTreeDir
+" }}}
 
 
-" AUTOCMDS "
-
+" AUTOCMDS {{{
 " Do not show numbers in terminal and wiki files
 autocmd TermOpen * setlocal nonumber
 autocmd FileType vimwiki setlocal nonumber spell
@@ -212,10 +217,10 @@ autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
 " Highlight word under cursor
 autocmd CursorMoved * silent call CocActionAsync('highlight')
+" }}}
 
 
-" HOTKEYS "
-
+" HOTKEYS {{{
 inoremap <Tab> <C-R>=SmartTab()<CR>
 " Map NERDTreeToggle on Control-b
 map <C-b> :NERDTreeToggle<CR>
@@ -247,16 +252,17 @@ map <F3> :call CocAction('jumpReferences')<CR>
 map gl $
 map gh 0
 map <C-T> :terminal<CR>
+nnoremap <C-Space> za
+" }}}
 
 
-" COMMANDS "
-
+" COMMANDS {{{
 command PrettyJSON %!python -m json.tool
 " command Diff !kitty @ new-window --new-tab --cwd $(pwd) --no-response git difftool --no-symlinks --dir-diff
+" }}}
 
 
-" FUNCTIONS "
-
+" FUNCTIONS {{{
 function! s:Setup()
   if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
     execute 'cd' argv()[0]
@@ -361,3 +367,7 @@ function! LightlineMode()
         \ &ft == 'vim-plug' ? '  ' :
         \ winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
+
+" }}}
+
+" vim:foldmethod=marker:foldlevel=0
