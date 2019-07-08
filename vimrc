@@ -184,6 +184,19 @@ let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
 let g:lightline.tabline_separator = { 'left': '', 'right': '' }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
+let g:lightline.mode_map = {
+  \ 'n' : 'N',
+  \ 'i' : 'I',
+  \ 'R' : 'R',
+  \ 'v' : 'V',
+  \ 'V' : 'V-L',
+  \ "\<C-v>": 'V-B',
+  \ 'c' : 'C',
+  \ 's' : 'S',
+  \ 'S' : 'S-L',
+  \ "\<C-s>": 'S-B',
+  \ 't': 'T',
+  \ }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
 let g:python3_host_prog = '/usr/bin/python3'
