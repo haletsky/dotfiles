@@ -159,7 +159,7 @@ let g:lightline = { }
 let g:lightline.colorscheme = 'one'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
-  \  'right': [ [ 'percent', 'lineinfo' ], [ 'cocstatus'], [ 'fileformat', 'fileencoding', 'buffersize', 'filetype' ] ]
+  \  'right': [ [ 'percent', 'lineinfo' ], [ 'buffersize' ], ['cocstatus', 'filetype'] ]
   \ }
 let g:lightline.inactive = { 'left': [['mode'], ['filename']], 'right': [] }
 let g:lightline.component = {
