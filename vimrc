@@ -185,17 +185,17 @@ let g:lightline.tabline_separator = { 'left': '', 'right': '' }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.mode_map = {
-  \ 'n' : 'N',
-  \ 'i' : 'I',
-  \ 'R' : 'R',
-  \ 'v' : 'V',
-  \ 'V' : 'V-L',
-  \ "\<C-v>": 'V-B',
-  \ 'c' : 'C',
-  \ 's' : 'S',
-  \ 'S' : 'S-L',
-  \ "\<C-s>": 'S-B',
-  \ 't': 'T',
+  \ 'n' : ' N ',
+  \ 'i' : ' I ',
+  \ 'R' : ' R ',
+  \ 'v' : ' V ',
+  \ 'V' : ' V-L ',
+  \ "\<C-v>": ' V-B ',
+  \ 'c' : ' C ',
+  \ 's' : ' S ',
+  \ 'S' : ' S-L ',
+  \ "\<C-s>": ' S-B ',
+  \ 't': ' T ',
   \ }
 " Python provider
 let g:python_host_prog  = '/usr/bin/python2.7'
@@ -266,6 +266,12 @@ map gl $
 map gh 0
 map <C-T> :terminal<CR>
 nnoremap <C-Space> za
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
 " }}}
 
 
