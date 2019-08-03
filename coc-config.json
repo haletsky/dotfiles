@@ -1,6 +1,6 @@
 {
   "list.source.grep.command": "ag",
-  "list.source.grep.defaultArgs": ["--ignore-dir", "public"],
+  "list.source.grep.defaultArgs": ["--ignore", "*.min.js"],
   "coc.preferences.hoverTarget": "float",
   "codeLens.enable": true,
   "coc.source.gocode.enable": true,
