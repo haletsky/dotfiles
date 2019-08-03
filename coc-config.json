@@ -1,5 +1,6 @@
 {
   "list.source.grep.command": "ag",
+  "list.source.grep.defaultArgs": ["--ignore-dir", "public"],
   "coc.preferences.hoverTarget": "float",
   "codeLens.enable": true,
   "coc.source.gocode.enable": true,
@@ -7,5 +8,9 @@
   "coc.preferences.formatOnSaveFiletypes": ["go"],
   "git.addedSign.text": "┃",
   "git.removedSign.text": "┃",
-  "git.changedSign.text": "┃"
+  "git.changedSign.text": "┃",
+  "tsserver.formatOnType": false,
+  "diagnostic.refreshAfterSave": true,
+  "diagnostic.virtualText": true,
+  "tslint.autoFixOnSave": true
 }
