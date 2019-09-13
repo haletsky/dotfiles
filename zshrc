@@ -14,7 +14,7 @@ export EDITOR='nvim'
 
 alias diary='nvim +VimwikiIndex +set\ laststatus=0'
 alias f='ranger'
-alias e='nvim'
+alias e='~/Downloads/nvim.appimage'
 
 unset MANPATH # delete if you already modified MANPATH elsewhere in your config
 export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"

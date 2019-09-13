@@ -22,12 +22,12 @@ Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
+" Plug 'ianks/vim-tsx'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
-Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': './install.sh' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neoclide/coc-yank', { 'do': 'npm install' }
-Plug 'neoclide/coc-tsserver', { 'do': 'npm install' }
 Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
 Plug 'josa42/coc-go', { 'do': 'npm install' }
 Plug 'neoclide/coc-lists', { 'do': 'npm install' }
@@ -110,15 +110,16 @@ let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
   \ 'b': [':Gblame', 'Git blame'],
+  \ 'B': [':CocList branches', 'Git branches'],
   \ 'd': [':Gdiff', 'Git diff'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'l': [':CocList commits', 'Git log'],
   \ 'L': [':CocList bcommits', 'Git log of current file'],
   \ 'p': [':Gpull', 'Git pull'],
   \ 'P': [':Gpush', 'Git push'],
-  \ 'r': [':call CocActionAsync("rename")', 'Rename a variable'],
-  \ 'f': [':call CocActionAsync("fold")', 'Fold'],
-  \ 'i': [':call CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
+  \ 'r': ['CocActionAsync("rename")', 'Rename a variable'],
+  \ 'f': ['CocActionAsync("fold")', 'Fold'],
+  \ 'i': ['CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
   \ 's': [':Gstatus', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
@@ -229,7 +230,7 @@ autocmd! FileType which_key
 autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
 " Highlight word under cursor
-autocmd CursorMoved * silent call CocActionAsync('highlight')
+autocmd CursorHold * silent call CocActionAsync('highlight')
 " }}}
 
 
@@ -256,7 +257,7 @@ map <C-p> :CocList files<CR>
 map <C-g> :CocList outline<CR>
 map <C-q> :call CocAction('doQuickfix')<CR>
 " Which-key menu
-nnoremap m :WhichKeyVisual! g:which_key_map<CR>
+nnoremap m :WhichKey! g:which_key_map<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
 map <F1> :call CocAction('doHover')<CR>
