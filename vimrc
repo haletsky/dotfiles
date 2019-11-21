@@ -29,7 +29,6 @@ Plug 'jparise/vim-graphql'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neoclide/coc-yank', { 'do': 'npm install' }
 Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
-Plug 'josa42/coc-go', { 'do': 'npm install' }
 Plug 'neoclide/coc-lists', { 'do': 'npm install' }
 Plug 'neoclide/coc-git', { 'do': 'npm install' }
 Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
@@ -59,40 +58,41 @@ try
   colorscheme one
 catch
 endtry
-set nocompatible
-set nonumber
 set autoread
+set background=dark
+set clipboard+=unnamedplus
+set complete+=k
+set completeopt-=preview
+set cursorline
+set encoding=utf8
+set expandtab
+set foldenable
+set foldlevelstart=10
+set foldmethod=syntax
+set foldnestmax=10
+set hidden
+set ignorecase
 set langmenu=en
-set wildmenu
-set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
+set laststatus=2
+set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
+set mouse=a
+set nobackup
+set nocompatible
+set noincsearch
+set nonumber
+set noshowmode
+set noswapfile
+set nowb
 set nowrap
 set shiftwidth=2
-set tabstop=2
-set expandtab
+set signcolumn=auto:2
 set smarttab
-set autoread
-set clipboard+=unnamedplus
+set tabstop=2
 set undodir=~/.vim/undo-dir
 set undofile
 set updatetime=1000
-set laststatus=2
-set noswapfile
-set nobackup
-set nowb
-set noshowmode
-set mouse=a
-set ignorecase
-set encoding=utf8
-set complete+=k
-set cursorline
-set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
-set background=dark
-set completeopt-=preview
-set signcolumn=auto:2
-set foldenable
-set foldlevelstart=10
-set foldnestmax=10
-set foldmethod=syntax
+set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
+set wildmenu
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -120,7 +120,7 @@ let g:which_key_map = {
   \ 'r': ['CocActionAsync("rename")', 'Rename a variable'],
   \ 'f': ['CocActionAsync("fold")', 'Fold'],
   \ 'i': ['CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
-  \ 's': [':Gstatus', 'Git status'],
+  \ 's': [':Gstatus | wincmd L | vertical resize 60', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
   \ 'y': [':CocList yank', 'Copy history'],
@@ -211,9 +211,6 @@ highlight! link NERDTreeFlags NERDTreeDir
 
 
 " AUTOCMDS {{{
-" Do not show numbers in terminal and wiki files
-autocmd TermOpen * setlocal nonumber
-autocmd FileType vimwiki setlocal nonumber spell
 " Close NERDTree if we close last file
 autocmd StdinReadPre * let s:std_in = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -288,7 +285,6 @@ function! s:Setup()
     execute 'cd' argv()[0]
     tabe
     execute 'terminal'
-    setlocal nonumber
     execute 'VimwikiTabIndex'
     execute 'Calendar -view=year -split=vertical -width=31'
     wincmd w
