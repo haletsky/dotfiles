@@ -7796,15 +7796,16 @@ const exist = p => { try { return Boolean(statSync(p)) } catch (e) { return fals
 const files = readdirSync(path, { withFileTypes: true })
 const newUniquePath = (path, ext) => {
   let newPath
+  let newFilename
 
   do {
-    const newFilename = [1, 2]
+    newFilename = [1, 2]
       .map(getRandomWord)
       .reduce((p, c) => `${p}-${c}`)
     newPath = `${trail(path)}${newFilename}${ext}`
   } while(exist(newPath))
 
-  return newPath
+  return { path: newPath, name: newFilename }
 }
 
 files.forEach(d => {
@@ -7812,7 +7813,9 @@ files.forEach(d => {
   if (d.name.match(/^\w+[-]\w+.\w+$/)) return
 
   const oldPath = `${trail(path)}${d.name}`
-  const newPath = newUniquePath(path, getExtension(d.name))
+  const newFile = newUniquePath(path, getExtension(d.name))
 
-  renameSync(oldPath, newPath)
+  renameSync(oldPath, newFile.path)
+
+  console.log(`${d.name} \t-> ${newFile.name}`)
 })
