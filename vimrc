@@ -28,10 +28,9 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neoclide/coc-yank', { 'do': 'npm install' }
-Plug 'neoclide/coc-tslint', { 'do': 'npm install' }
 Plug 'neoclide/coc-lists', { 'do': 'npm install' }
 Plug 'neoclide/coc-git', { 'do': 'npm install' }
-Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
+" Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 Plug 'posva/vim-vue'
 Plug 'neoclide/coc-vetur', { 'do': 'npm install' }
 call plug#end()
@@ -74,7 +73,7 @@ set hidden
 set ignorecase
 set langmenu=en
 set laststatus=2
-set list listchars=tab:\|\ ,trail:⎵,precedes:<,extends:>
+set list listchars=tab:\▏\ ,trail:⎵,precedes:<,extends:>
 set mouse=a
 set nobackup
 set nocompatible
@@ -109,17 +108,18 @@ endif
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
-  \ 'b': [':Gblame', 'Git blame'],
   \ 'B': [':CocList branches', 'Git branches'],
-  \ 'd': [':Gdiff', 'Git diff'],
-  \ 'j': [':%!python -m json.tool', 'Pretty json'],
-  \ 'l': [':CocList commits', 'Git log'],
   \ 'L': [':CocList bcommits', 'Git log of current file'],
-  \ 'p': [':Gpull', 'Git pull'],
   \ 'P': [':Gpush', 'Git push'],
-  \ 'r': ['CocActionAsync("rename")', 'Rename a variable'],
+  \ 'b': [':Gblame', 'Git blame'],
+  \ 'd': [':Gdiff', 'Git diff'],
   \ 'f': ['CocActionAsync("fold")', 'Fold'],
   \ 'i': ['CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
+  \ 'j': [':%!python -m json.tool', 'Pretty json'],
+  \ 'l': [':CocList commits', 'Git log'],
+  \ 'p': [':Gpull', 'Git pull'],
+  \ 'q': [':CocCommand eslint.executeAutofix', 'Autofix files'],
+  \ 'r': ['CocActionAsync("rename")', 'Rename a variable'],
   \ 's': [':Gstatus | wincmd L | vertical resize 60', 'Git status'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
@@ -139,6 +139,7 @@ let g:DevIconsEnableFoldersOpenClose = 1
 let g:NERDDefaultAlign = "left"
 let g:NERDSpaceDelims = 1
 " NERDTree
+let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
 let g:NERDTreeDirArrowExpandable="\u00a0"
 let g:NERDTreeDirArrowCollapsible="\u00a0"
 let g:NERDTreeChDirMode = 1
@@ -179,10 +180,10 @@ let g:lightline.component_expand = {
   \  'linter_ok':       'LightlineLinterOK',
   \  'buffersize':      'FileSize'
   \ }
-let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
-let g:lightline.tab_component_function = { 'title': 'TabTitle' }
-let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
-let g:lightline.tabline_separator = { 'left': '', 'right': '' }
+" let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
+" let g:lightline.tab_component_function = { 'title': 'TabTitle' }
+" let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
+" let g:lightline.tabline_separator = { 'left': '', 'right': '' }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.mode_map = {
@@ -283,14 +284,14 @@ command PrettyJSON %!python -m json.tool
 function! s:Setup()
   if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
     execute 'cd' argv()[0]
-    tabe
-    execute 'terminal'
-    execute 'VimwikiTabIndex'
-    execute 'Calendar -view=year -split=vertical -width=31'
-    wincmd w
-    execute 'VimwikiDiaryIndex'
-    tabm 0
-    tabn
+    " tabe
+    " execute 'terminal'
+    " execute 'VimwikiTabIndex'
+    " execute 'Calendar -view=year -split=vertical -width=31'
+    " wincmd w
+    " execute 'VimwikiDiaryIndex'
+    " tabm 0
+    " tabn
     ene
     call lightline#update()
   endif
