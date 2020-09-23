@@ -2,10 +2,10 @@
 call plug#begin('~/.vim/plugins')
 " Appearance
 Plug 'itchyny/lightline.vim'
-Plug 'rakr/vim-one'
 Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 " Apps
-Plug 'itchyny/calendar.vim'
 Plug 'vimwiki/vimwiki'
 " Functionality
 Plug 'docunext/closetag.vim'
@@ -17,20 +17,17 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
 Plug 'mbbill/undotree'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'wakatime/vim-wakatime'
 " Programming
 Plug 'mxw/vim-jsx'
+Plug 'ianks/vim-tsx'
+Plug 'cespare/vim-toml'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
-" Plug 'ianks/vim-tsx'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neoclide/coc-yank', { 'do': 'npm install' }
-Plug 'neoclide/coc-lists', { 'do': 'npm install' }
-Plug 'neoclide/coc-git', { 'do': 'npm install' }
-" Plug 'neoclide/coc-highlight', { 'do': 'npm install' }
 Plug 'posva/vim-vue'
 Plug 'neoclide/coc-vetur', { 'do': 'npm install' }
 call plug#end()
@@ -38,6 +35,9 @@ call plug#end()
 
 
 " BASE SETTINGS {{{
+if (has('nvim'))
+  let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+endif
 if !isdirectory($HOME."/.vim")
   call mkdir($HOME."/.vim", "", 0770)
 endif
@@ -53,8 +53,9 @@ endif
 
 syntax on
 try
-  let g:one_allow_italics = 1
-  colorscheme one
+  let g:material_theme_style = 'darker'
+  let g:material_terminal_italics = 1
+  colorscheme material
 catch
 endtry
 set autoread
@@ -83,8 +84,12 @@ set noshowmode
 set noswapfile
 set nowb
 set nowrap
+set nowritebackup
+set sessionoptions-=blank
 set shiftwidth=2
-set signcolumn=auto:2
+set shortmess+=c
+" set signcolumn=auto:2
+set signcolumn=yes
 set smarttab
 set tabstop=2
 set undodir=~/.vim/undo-dir
@@ -113,7 +118,7 @@ let g:which_key_map = {
   \ 'P': [':Gpush', 'Git push'],
   \ 'b': [':Gblame', 'Git blame'],
   \ 'd': [':Gdiff', 'Git diff'],
-  \ 'f': ['CocActionAsync("fold")', 'Fold'],
+  \ 'f': [':CocList actions', 'Fix'],
   \ 'i': ['CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'l': [':CocList commits', 'Git log'],
@@ -125,10 +130,6 @@ let g:which_key_map = {
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
   \ 'y': [':CocList yank', 'Copy history'],
   \ }
-"\ 'l': [':Gllog -- %', 'Git log'],
-" Calendar
-let g:calendar_views = ['year', 'month', 'day', 'clock']
-let g:calendar_first_day = 'monday'
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 " Devicons
@@ -146,7 +147,8 @@ let g:NERDTreeChDirMode = 1
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeMarkBookmarks = 1
 let g:NERDTreeMinimalUI = 1
-let g:NERDTreeIndicatorMapCustom = {
+" let g:NERDTreeGitStatusUseNerdFonts = 1
+let g:NERDTreeGitStatusIndicatorMapCustom = {
   \ "Modified"  : "\ue371",
   \ "Staged"    : "\ue39b",
   \ "Untracked" : "\ue38d",
@@ -158,12 +160,12 @@ let g:NERDTreeIndicatorMapCustom = {
 let g:jsx_ext_required = 0
 " Lightline
 let g:lightline = { }
-let g:lightline.colorscheme = 'one'
+let g:lightline.colorscheme = 'material_vim'
 let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'relativepath', 'modified', 'readonly' ] ],
   \  'right': [ [ 'percent', 'lineinfo' ], [ 'buffersize' ], ['cocstatus', 'filetype'] ]
   \ }
-let g:lightline.inactive = { 'left': [['mode'], ['filename']], 'right': [] }
+let g:lightline.inactive = { 'left': [['mode'], [], ['filename']], 'right': [] }
 let g:lightline.component = {
   \ 'filetype': '%{WebDevIconsGetFileTypeSymbol()} ',
   \ 'relativepath': ' %f'
@@ -171,7 +173,7 @@ let g:lightline.component = {
 let g:lightline.component_function = {
   \ 'readonly': 'LightlineReadonly',
   \ 'mode': 'LightlineMode',
-  \ 'gitbranch': 'LightlineFugitive',
+  \ 'gitbranch': 'LightlineGitBranch',
   \ 'cocstatus': 'StatusDiagnostic'
   \ }
 let g:lightline.component_expand = {
@@ -180,10 +182,6 @@ let g:lightline.component_expand = {
   \  'linter_ok':       'LightlineLinterOK',
   \  'buffersize':      'FileSize'
   \ }
-" let g:lightline.tab = { 'active': ['title'], 'inactive': ['title'] }
-" let g:lightline.tab_component_function = { 'title': 'TabTitle' }
-" let g:lightline.tabline_subseparator = { 'left': '', 'right': '' }
-" let g:lightline.tabline_separator = { 'left': '', 'right': '' }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.mode_map = {
@@ -271,6 +269,11 @@ inoremap <A-j> <Esc>:m .+1<CR>==gi
 inoremap <A-k> <Esc>:m .-2<CR>==gi
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
+map = :resize -4<CR>
+map - :resize +4<CR>
+map + :vertical resize -5<CR>
+map _ :vertical resize +5<CR>
+map ` :call OpenTODO()<CR>
 " }}}
 
 
@@ -345,12 +348,8 @@ function! LightlineReadonly()
   return &readonly ? '' : ''
 endfunction
 
-function! LightlineFugitive()
-  if exists('*fugitive#head')
-    let branch = fugitive#head()
-    return branch !=# '' ? ' '.branch : ''
-  endif
-  return ''
+function! LightlineGitBranch()
+  return get(g:, 'coc_git_status', '')
 endfunction
 
 function! StatusDiagnostic() abort
@@ -383,6 +382,16 @@ function! LightlineMode()
         \ &ft == 'vimwiki' ? '  ' :
         \ &ft == 'vim-plug' ? '  ' :
         \ winwidth(0) > 60 ? lightline#mode() : ''
+endfunction
+
+function! OpenTODO()
+  vsplit
+  wincmd p
+  vertical resize 50
+  execute 'VimwikiIndex'
+  setlocal wrap
+  setlocal statusline=\ \ TODO
+  execute 'autocmd! WinLeave <buffer=' . bufnr('%') . '> exit'
 endfunction
 
 " }}}
