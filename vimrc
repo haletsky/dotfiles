@@ -18,6 +18,9 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
 Plug 'mbbill/undotree'
 Plug 'wakatime/vim-wakatime'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'skywind3000/asynctasks.vim'
+Plug 'skywind3000/asyncrun.vim'
 " Programming
 Plug 'mxw/vim-jsx'
 Plug 'ianks/vim-tsx'
@@ -27,9 +30,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jparise/vim-graphql'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'posva/vim-vue'
-Plug 'neoclide/coc-vetur', { 'do': 'npm install' }
 call plug#end()
 " }}}
 
@@ -62,6 +63,7 @@ set autoread
 set background=dark
 set clipboard+=unnamedplus
 set complete+=k
+set conceallevel=2
 set completeopt-=preview
 set cursorline
 set encoding=utf8
@@ -80,6 +82,7 @@ set nobackup
 set nocompatible
 set noincsearch
 set nonumber
+set noshowcmd
 set noshowmode
 set noswapfile
 set nowb
@@ -88,6 +91,7 @@ set nowritebackup
 set sessionoptions-=blank
 set shiftwidth=2
 set shortmess+=c
+set shortmess+=F
 " set signcolumn=auto:2
 set signcolumn=yes
 set smarttab
@@ -109,6 +113,9 @@ endif
 
 
 " PLUGIN CONFIGURATION {{{
+let g:asyncrun_open = 6
+let g:asyncrun_rootmarks = ['.git']
+let g:asynctasks_term_pos = 'right'
 " Which-key
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
@@ -118,7 +125,7 @@ let g:which_key_map = {
   \ 'P': [':Gpush', 'Git push'],
   \ 'b': [':Gblame', 'Git blame'],
   \ 'd': [':Gdiff', 'Git diff'],
-  \ 'f': [':CocList actions', 'Fix'],
+  \ 'f': ['CocActionAsync("codeAction")', 'Fix'],
   \ 'i': ['CocActionAsync("runCommand", "tsserver.organizeImports")', 'Orginize imports'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'l': [':CocList commits', 'Git log'],
@@ -130,6 +137,8 @@ let g:which_key_map = {
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
   \ 'y': [':CocList yank', 'Copy history'],
   \ }
+let g:which_key_map['m'] = { }
+
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 " Devicons
@@ -227,6 +236,7 @@ autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
 " Highlight word under cursor
 autocmd CursorHold * silent call CocActionAsync('highlight')
+autocmd VimEnter * silent call InitializeProjectTasks()
 " }}}
 
 
@@ -259,6 +269,7 @@ map f <Plug>(easymotion-bd-W)
 map <F1> :call CocAction('doHover')<CR>
 map <F2> :call CocAction('jumpDefinition')<CR>
 map <F3> :call CocAction('jumpReferences')<CR>
+map <F4> :call CocActionAsync("codeAction")<CR>
 map gl $
 map gh 0
 map <C-T> :terminal<CR>
@@ -390,9 +401,21 @@ function! OpenTODO()
   vertical resize 50
   execute 'VimwikiIndex'
   setlocal wrap
+  setlocal signcolumn=no
   setlocal statusline=\ \ TODO
   execute 'autocmd! WinLeave <buffer=' . bufnr('%') . '> exit'
 endfunction
+
+function! InitializeProjectTasks()
+  let tasks = asynctasks#source(100)
+  let i = 0
+  for task in tasks
+    let command = task[0]
+    let title = substitute(substitute(command, '-', ' ', 'g'), '\<\(\w\)\(\w*\)\>', '\u\1\L\2', 'g') . ' <' . task[2] . '>'
+    let letter = substitute(command, 'project-', '', 'g')[0]
+    let g:which_key_map['m'][letter] = [':AsyncTask ' . command, title]
+  endfor
+endfunc
 
 " }}}
 
