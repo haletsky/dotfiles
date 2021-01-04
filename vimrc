@@ -137,7 +137,7 @@ let g:which_key_map = {
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
   \ 'y': [':CocList yank', 'Copy history'],
   \ }
-let g:which_key_map['m'] = { }
+let g:which_key_map['m'] = { 'name': '+tasks-menu' }
 
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
@@ -231,12 +231,12 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 " Setup at startup
 autocmd VimEnter * call s:Setup()
 " Which-key
+autocmd VimEnter * silent call InitializeProjectTasks()
 autocmd! FileType which_key
 autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
 " Highlight word under cursor
 autocmd CursorHold * silent call CocActionAsync('highlight')
-autocmd VimEnter * silent call InitializeProjectTasks()
 " }}}
 
 
@@ -407,15 +407,17 @@ function! OpenTODO()
 endfunction
 
 function! InitializeProjectTasks()
-  let tasks = asynctasks#source(100)
-  let i = 0
-  for task in tasks
+  for task in asynctasks#source(100)
     let command = task[0]
-    let title = substitute(substitute(command, '-', ' ', 'g'), '\<\(\w\)\(\w*\)\>', '\u\1\L\2', 'g') . ' <' . task[2] . '>'
-    let letter = substitute(command, 'project-', '', 'g')[0]
-    let g:which_key_map['m'][letter] = [':AsyncTask ' . command, title]
+    let title = substitute(substitute(command, '-', ' ', 'g'), '\<\(\w\)\(\w*\)\>', '\u\1\L\2', 'g') . '  ' . task[2]
+    for letter in split(substitute(tolower(trim(command)), 'project-', '', 'g'), '\zs')
+      if has_key(g:which_key_map['m'], letter) == 0
+        let g:which_key_map['m'][letter] = [':AsyncTask ' . command, title]
+        break
+      endif
+    endfor
   endfor
-endfunc
+endfunction
 
 " }}}
 
