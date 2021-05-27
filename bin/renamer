@@ -24,7 +24,7 @@ const PATH = resolve(process.cwd(), process.argv[2])
 const trail = (p = '') => p[p.length - 1] === '/' ? p : p.concat('/')
 const getExtension = (f = '', i = f.indexOf('.')) => f.substring(i > -1 ? i : f.length)
 const getRandomWord = () => words[Math.round((Math.random() * (words.length - 1)))]
-const exist = p => { try { return Boolean(statSync(p)) } catch (e) { return false } }
+const fileExists = p => { try { return Boolean(statSync(p)) } catch (e) { return false } }
 const files = readdirSync(PATH, { withFileTypes: true })
 const newUniquePath = (path, ext) => {
   let newPath
@@ -34,7 +34,7 @@ const newUniquePath = (path, ext) => {
     newFilename = new Array(WORDS_IN_NEW_NAME).fill(0).map(getRandomWord).join('-')
 
     newPath = `${trail(path)}${newFilename}${ext}`
-  } while(exist(newPath))
+  } while(fileExists(newPath))
 
   return { path: newPath, name: newFilename }
 }

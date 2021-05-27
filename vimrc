@@ -2,18 +2,16 @@
 call plug#begin('~/.vim/plugins')
 " Appearance
 Plug 'itchyny/lightline.vim'
-Plug 'kaicataldo/material.vim', { 'branch': 'main' }
+Plug 'marko-cerovac/material.nvim'
+Plug 'ryanoasis/vim-devicons'
+Plug 'kyazdani42/nvim-web-devicons'
 " Apps
 Plug 'vimwiki/vimwiki'
 " Functionality
 Plug 'docunext/closetag.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'raimondi/delimitmate'
-Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'ryanoasis/vim-devicons'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
@@ -22,15 +20,8 @@ Plug 'wakatime/vim-wakatime'
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'preservim/tagbar'
-" Programming
-Plug 'mxw/vim-jsx'
-Plug 'ianks/vim-tsx'
-Plug 'cespare/vim-toml'
-Plug 'pangloss/vim-javascript'
-Plug 'leafgarland/typescript-vim'
+Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
-Plug 'jparise/vim-graphql'
-Plug 'posva/vim-vue'
 " Neovim 0.5
 Plug 'hrsh7th/nvim-compe'
 Plug 'neovim/nvim-lspconfig'
@@ -38,12 +29,29 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'dstein64/nvim-scrollview', { 'branch': 'main' }
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+Plug 'glepnir/lspsaga.nvim'
+Plug 'folke/trouble.nvim'
+Plug 'kyazdani42/nvim-tree.lua'
+Plug 'akinsho/nvim-bufferline.lua'
 call plug#end()
 " }}}
 
 
 " LUA SCRIPTS {{{
 lua << EOF
+
+require("bufferline").setup({
+  options = {
+    offsets = {{
+      filetype = "NvimTree",
+      text = "File Explorer",
+      text_align = "center"
+    }}
+  }
+})
+
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -60,6 +68,7 @@ local on_attach = function(client, bufnr)
       augroup lsp_document_highlight
         autocmd! * <buffer>
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+        autocmd CursorHold <buffer> lua require'lspsaga.diagnostic'.show_line_diagnostics()
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
     ]], false)
@@ -78,7 +87,7 @@ require'compe'.setup {
   autocomplete = true;
   debug = false;
   min_length = 1;
-  preselect = 'enable';
+  preselect = 'disable';
   throttle_time = 80;
   source_timeout = 200;
   incomplete_delay = 400;
@@ -120,8 +129,10 @@ endif
 
 syntax on
 try
-  let g:material_theme_style = 'darker'
-  let g:material_terminal_italics = 1
+  let g:material_italic_comments = v:true
+  let g:material_borders = v:true
+  let g:material_contrast = v:true
+  let g:material_style = 'darker'
   colorscheme material
 catch
 endtry
@@ -165,6 +176,7 @@ set undofile
 set updatetime=500
 set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
 set wildmenu
+set fillchars=eob:\ ,vert:\│
 filetype plugin on
 filetype indent on
 if !has('gui_running')
@@ -194,10 +206,13 @@ let g:which_key_map = {
   \ 'P': [':Git push', 'Git push'],
   \ 'b': [':Gblame', 'Git blame'],
   \ 'd': [':Gdiff', 'Git diff'],
+  \ 'D': [':LspTrouble', 'Diagnostics'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'l': [':Telescope git_commits', 'Git log'],
   \ 'p': [':Gpull', 'Git pull'],
-  \ 's': [':Gstatus | wincmd L | vertical resize 60', 'Git status'],
+  \ 'i': [':Lspsaga implement', 'Implementation'],
+  \ 's': [':Git | wincmd L | vertical resize 60', 'Git status'],
+  \ 'r': [":Lspsaga rename", 'Rename'],
   \ 't': [':tabe | terminal', 'Open a terimnal'],
   \ 'T': [':TagbarToggle', 'Tagbar toggle'],
   \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
@@ -207,32 +222,20 @@ let g:which_key_map['m'] = { 'name': '+tasks-menu' }
 " Vimwiki
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
 " Devicons
-let g:WebDevIconsUnicodeDecorateFolderNodes = v:true
-let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:DevIconsEnableFoldersOpenClose = 1
 " NERD Commenter
 let g:NERDDefaultAlign = "left"
 let g:NERDSpaceDelims = 1
-" NERDTree
-let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
-let g:NERDTreeDirArrowExpandable=""
-let g:NERDTreeDirArrowCollapsible=""
-let g:NERDTreeChDirMode = 1
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeMarkBookmarks = 1
-let g:NERDTreeMinimalUI = 1
-let g:NERDTreeAutoCenter = 1
-let g:NERDTreeAutoCenterThreshold = 1
-let g:NERDTreeStatusline= ' '
-" let g:NERDTreeGitStatusUseNerdFonts = 1
-let g:NERDTreeGitStatusIndicatorMapCustom = {
-  \ "Modified"  : "\ue371",
-  \ "Staged"    : "\ue39b",
-  \ "Untracked" : "\ue38d",
-  \ "Dirty"     : "\ue371",
-  \ "Renamed"   : "",
-  \ "Clean"     : "✔︎",
-  \ }
+" NvimTree
+let g:nvim_tree_width = 40
+let g:nvim_tree_lsp_diagnostics = 1
+let g:nvim_tree_group_empty = 1
+let g:nvim_tree_add_trailing = 1
+let g:nvim_tree_auto_close = 1
+let g:nvim_tree_indent_markers = 1
+let g:nvim_tree_disable_window_picker = 1
+let g:nvim_tree_icons = { 'default': '' }
+let g:nvim_tree_width_allow_resize = 1
 " Enable JSX syntax in .js files
 let g:jsx_ext_required = 0
 " Lightline
@@ -258,6 +261,7 @@ let g:lightline.component_expand = {
   \  'linter_ok':       'LightlineLinterOK',
   \  'buffersize':      'FileSize'
   \ }
+let g:lightline.enable = { 'tabline': 0 }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.mode_map = {
@@ -281,24 +285,20 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 " HIGHLIGHTS {{{
 highlight HighlightedyankRegion term=bold guifg=#000000 guibg=#e5c07b
-highlight! link NERDTreeFlags NERDTreeDir
+highlight NonText guifg=bg
 " }}}
 
 
 " AUTOCMDS {{{
-" Close NERDTree if we close last file
-autocmd StdinReadPre * let s:std_in = 1
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Remove traling spaces after save
 autocmd BufWritePre * %s/\s\+$//e
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
-autocmd FileType nerdtree,fugitive,gitcommit,help,vimwiki setlocal signcolumn=no
+" Remove signcolunm from certain filetypes
+autocmd FileType fugitive,gitcommit,help,vimwiki setlocal signcolumn=no
 autocmd TermOpen * setlocal signcolumn=no
 " Move cursor to last edited line when open file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-" Setup at startup
-autocmd VimEnter * call s:Setup()
 " Which-key
 autocmd VimEnter * silent call InitializeProjectTasks()
 autocmd! FileType which_key
@@ -309,9 +309,9 @@ autocmd  FileType which_key set laststatus=0
 
 " HOTKEYS {{{
 inoremap <Tab> <C-R>=SmartTab()<CR>
-" Map NERDTreeToggle on Control-b
-map <C-b> :NERDTreeToggle<CR>
-imap <C-b> <C-O>:NERDTreeToggle<CR>
+" Map NvimTreeToggle on Control-b
+map <C-b> :NvimTreeToggle<CR>
+imap <C-b> <C-O>:NvimTreeToggle<CR>
 " Tab movement
 noremap <A-l> :tabn<CR>
 noremap <A-h> :tabp<CR>
@@ -333,10 +333,11 @@ map <C-q> :call CocAction('doQuickfix')<CR>
 nnoremap m :WhichKey! g:which_key_map<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
-nnoremap <silent><nowait> <F1> :lua vim.lsp.buf.hover()<CR>
+nnoremap <silent><nowait> <F1> <cmd>lua require('lspsaga.hover').render_hover_doc()<CR>
 nnoremap <silent><nowait> <F2> :Telescope lsp_definitions<CR>
 nnoremap <silent><nowait> <F3> :Telescope lsp_references<CR>
-nnoremap <silent><nowait> <F4> :Telescope lsp_code_actions<CR>
+" nnoremap <silent><nowait> <F4> :Telescope lsp_code_actions<CR>
+nnoremap <silent><nowait> <F4> <cmd>lua require('lspsaga.codeaction').code_action()<CR>
 map gl $
 map gh 0
 map <C-T> :terminal<CR>
@@ -362,42 +363,12 @@ command PrettyJSON %!python -m json.tool
 
 
 " FUNCTIONS {{{
-function! s:Setup()
-  if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in")
-    execute 'cd' argv()[0]
-    " tabe
-    " execute 'terminal'
-    " execute 'VimwikiTabIndex'
-    " execute 'Calendar -view=year -split=vertical -width=31'
-    " wincmd w
-    " execute 'VimwikiDiaryIndex'
-    " tabm 0
-    " tabn
-    ene
-    call lightline#update()
-  endif
-endfunction
-
 function! SmartTab()
    if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
       return "\<Tab>"
    else
       return "\<C-N>"
    endif
-endfunction
-
-function! TabTitle(...)
- let title = a:1
-  if a:1 == 1
-    let title = '   '
-  endif
-  if a:1 == 2
-    let title = '   '
-  endif
-  if a:1 == 3
-    let title = '   '
-  endif
-  return title
 endfunction
 
 function! FileSize() abort
@@ -430,27 +401,8 @@ function! LightlineGitBranch()
   return FugitiveStatusline()
 endfunction
 
-function! StatusDiagnostic() abort
-  let info = get(b:, 'coc_diagnostic_info', {})
-  if empty(info) | return '✔' | endif
-  let msgs = []
-  if get(info, 'error', 0)
-    call add(msgs, info['error'] . ' ✖ ')
-  endif
-  if get(info, 'warning', 0)
-    call add(msgs, info['warning'] . ' ✱ ')
-  endif
-  if get(info, 'information', 0)
-    call add(msgs, info['information'] . ' ▲ ')
-  endif
-  if get(info, 'hint', 0)
-    call add(msgs, info['hint'] . ' H ')
-  endif
-  return join(msgs, ' ')
-endfunction
-
 function! LightlineMode()
-  return &ft == 'nerdtree' ? '  ' :
+  return &ft == 'NvimTree' ? '  ' :
         \ &ft == 'fugitive' ? '  ' :
         \ &ft == 'git' ? '  ' :
         \ &ft == 'gitcommit' ? '  ' :
@@ -487,5 +439,298 @@ function! InitializeProjectTasks()
 endfunction
 
 " }}}
+
+
+" MATERIAL LIGHTLINE THEME {{{
+let g:colors_name = 'material'
+let g:material_theme_style = 'darker'
+let g:material_terminal_italics = get(g:, 'material_terminal_italics', 0)
+let s:bg = { 'gui': '#263238', 'cterm': 'none' }
+let s:fg = { 'gui': '#eeffff', 'cterm': 231 }
+let s:invisibles = { 'gui': '#65738e', 'cterm': 66 }
+let s:comments = { 'gui': '#546e7a', 'cterm': 145 }
+let s:caret = { 'gui': '#ffcc00', 'cterm': 220 }
+let s:selection = { 'gui': '#2c3b41', 'cterm': 239 }
+let s:guides = { 'gui': '#37474f', 'cterm': 17 }
+let s:line_numbers = { 'gui': '#37474f', 'cterm': 145 }
+let s:line_highlight = { 'gui': '#1a2327', 'cterm': 235 }
+let s:white = { 'gui': '#ffffff', 'cterm': 231 }
+let s:black = { 'gui': '#000000', 'cterm': 232 }
+let s:red = { 'gui': '#ff5370', 'cterm': 203 }
+let s:orange = { 'gui': '#f78c6c', 'cterm': 209 }
+let s:yellow = { 'gui': '#ffcb6b', 'cterm': 11 }
+let s:green = { 'gui': '#c3e88d', 'cterm': 2 } " 186 –– almost perfect match
+let s:cyan = { 'gui': '#89ddff', 'cterm': 117 }
+let s:blue = { 'gui': '#82aaff', 'cterm': 111 }
+let s:paleblue = { 'gui': '#b2ccd6', 'cterm': 152 }
+let s:purple = { 'gui': '#c792ea', 'cterm': 176 }
+let s:brown = { 'gui': '#c17e70', 'cterm': 137 }
+let s:pink = { 'gui': '#f07178', 'cterm': 204 }
+let s:violet = { 'gui': '#bb80b3', 'cterm': 139 }
+if g:material_theme_style == 'palenight' || g:material_theme_style == 'palenight-community'
+  let s:bg = { 'gui': '#292d3e', 'cterm': 'none' }
+  let s:fg = { 'gui': '#a6accd', 'cterm': 146 }
+  let s:invisibles = { 'gui': '#4e5579', 'cterm': 60 }
+  let s:comments = { 'gui': '#676e95', 'cterm': 60 }
+  let s:selection = { 'gui': '#343b51', 'cterm': 60 }
+  let s:guides = { 'gui': '#4e5579', 'cterm': 60 }
+  let s:line_numbers = { 'gui': '#3a3f58', 'cterm': 60 }
+  let s:line_highlight = { 'gui': '#1c1f2b', 'cterm': 234 }
+elseif g:material_theme_style == 'darker' || g:material_theme_style == 'darker-community'
+  let s:bg = { 'gui': '#212121', 'cterm': 'none' }
+  let s:fg = { 'gui': '#eeffff', 'cterm': 231 }
+  let s:invisibles = { 'gui': '#65737e', 'cterm': 66 }
+  let s:comments = { 'gui': '#545454', 'cterm': 59 }
+  let s:selection = { 'gui': '#2c2c2c', 'cterm': 237 }
+  let s:guides = { 'gui': '#424242', 'cterm': 0 }
+  let s:line_numbers = { 'gui': '#424242', 'cterm': 0 }
+  let s:line_highlight = { 'gui': '#171717', 'cterm': 0 }
+elseif g:material_theme_style == 'ocean' || g:material_theme_style == 'ocean-community'
+  let s:bg = { 'gui': '#0f111a', 'cterm': 'none' }
+  let s:fg = { 'gui': '#8f93a2', 'cterm': 103 }
+  let s:invisibles = { 'gui': '#80869e', 'cterm': 103 }
+  let s:comments = { 'gui': '#464b5d', 'cterm': 60 }
+  let s:selection = { 'gui': '#1f2233', 'cterm': 60 }
+  let s:guides = { 'gui': '#3b3f51', 'cterm': 17 }
+  let s:line_numbers = { 'gui': '#3b3f51', 'cterm': 60 }
+  let s:line_highlight = { 'gui': '#0a0c12', 'cterm': 0 }
+elseif g:material_theme_style == 'lighter' || g:material_theme_style == 'lighter-community'
+  set background=light
+  let s:bg = { 'gui': '#fafafa', 'cterm': 'none' }
+  let s:fg = { 'gui': '#90a4ae', 'cterm': 109 }
+  let s:invisibles = { 'gui': '#e7eaec', 'cterm': 189 }
+  let s:comments = { 'gui': '#90a4ae', 'cterm': 109 }
+  let s:caret = { 'gui': '#272727', 'cterm': 0 }
+  let s:selection = { 'gui': '#ebf4f3', 'cterm': 254 }
+  let s:guides = { 'gui': '#b0bec5', 'cterm': 146 }
+  let s:line_numbers = { 'gui': '#cfd8dc', 'cterm': 188 }
+  let s:line_highlight = { 'gui': '#ecf0f1', 'cterm': 253 }
+  let s:white = { 'gui': '#ffffff', 'cterm': 231 }
+  let s:black = { 'gui': '#000000', 'cterm': 0 }
+  let s:red = { 'gui': '#e53935', 'cterm': 160 }
+  let s:orange = { 'gui': '#f76d47', 'cterm': 202 }
+  let s:yellow = { 'gui': '#ffb62c', 'cterm': 214 }
+  let s:green = { 'gui': '#91b859', 'cterm': 107 }
+  let s:cyan = { 'gui': '#39adb5', 'cterm': 37 }
+  let s:blue = { 'gui': '#6182b8', 'cterm': 67 }
+  let s:paleblue = { 'gui': '#8796b0', 'cterm': 103 }
+  let s:purple = { 'gui': '#7c4dff', 'cterm': 99 }
+  let s:brown = { 'gui': '#c17e70', 'cterm': 137 }
+  let s:pink = { 'gui': '#ff5370', 'cterm': 203 }
+  let s:violet = { 'gui': '#945eb8', 'cterm': 97 }
+endif
+
+" Defined globally so that the Airline theme has access
+let g:material_colorscheme_map = {}
+let g:material_colorscheme_map.bg = s:bg
+let g:material_colorscheme_map.fg = s:fg
+let g:material_colorscheme_map.invisibles = s:invisibles
+let g:material_colorscheme_map.comments = s:comments
+let g:material_colorscheme_map.caret = s:caret
+let g:material_colorscheme_map.selection = s:selection
+let g:material_colorscheme_map.guides = s:guides
+let g:material_colorscheme_map.line_numbers = s:line_numbers
+let g:material_colorscheme_map.line_highlight = s:line_highlight
+let g:material_colorscheme_map.white = s:white
+let g:material_colorscheme_map.black = s:black
+let g:material_colorscheme_map.red = s:red
+let g:material_colorscheme_map.orange = s:orange
+let g:material_colorscheme_map.yellow = s:yellow
+let g:material_colorscheme_map.green = s:green
+let g:material_colorscheme_map.cyan = s:cyan
+let g:material_colorscheme_map.blue = s:blue
+let g:material_colorscheme_map.paleblue = s:paleblue
+let g:material_colorscheme_map.purple = s:purple
+let g:material_colorscheme_map.brown = s:brown
+let g:material_colorscheme_map.pink = s:pink
+let g:material_colorscheme_map.violet = s:violet
+if (exists('g:lightline'))
+  let s:lighter_middle_fg = g:material_theme_style == 'lighter' ?
+    \ g:material_colorscheme_map.fg :
+    \ g:material_colorscheme_map.invisibles
+
+  let s:palette = { 'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {} }
+
+  let s:palette.normal.left = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.cyan.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.cyan.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.normal.right = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.cyan.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.cyan.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.normal.middle = [ [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui,
+      \ s:lighter_middle_fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.normal.error = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.red.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.red.cterm
+    \ ] ]
+
+  let s:palette.normal.warning = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.yellow.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.yellow.cterm,
+    \ ] ]
+
+  let s:palette.insert.left = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.purple.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.purple.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.insert.right = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.purple.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.purple.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.replace.left = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.green.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.green.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.replace.right = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.green.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.green.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.visual.left = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.blue.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.blue.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.visual.right = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.blue.gui,
+      \ g:material_theme_style == 'lighter' ?
+        \ g:material_colorscheme_map.white.cterm :
+        \ g:material_colorscheme_map.black.cterm,
+      \ g:material_colorscheme_map.blue.cterm
+    \ ], [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui,
+      \ g:material_colorscheme_map.fg.cterm,
+      \ g:material_colorscheme_map.selection.cterm
+    \ ] ]
+
+  let s:palette.inactive.left =  [ [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ], [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ] ]
+
+  let s:palette.inactive.right = [ [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ], [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ] ]
+
+  let s:palette.inactive.middle = [ [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ] ]
+
+  let s:palette.tabline.left = [ [
+      \ g:material_colorscheme_map.fg.gui,
+      \ g:material_colorscheme_map.line_numbers.gui
+    \ ] ]
+
+  let s:palette.tabline.middle = [ [
+      \ s:lighter_middle_fg.gui,
+      \ g:material_colorscheme_map.selection.gui
+    \ ] ]
+
+  let s:palette.tabline.right = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.cyan.gui
+    \ ] ]
+
+  let s:palette.tabline.tabsel = [ [
+      \ g:material_colorscheme_map.bg.gui,
+      \ g:material_colorscheme_map.cyan.gui
+    \ ] ]
+
+  let g:lightline#colorscheme#material_vim#palette = lightline#colorscheme#fill(s:palette)
+endif
+"}}}
 
 " vim:foldmethod=marker:foldlevel=0
