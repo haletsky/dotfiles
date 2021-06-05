@@ -111,7 +111,7 @@ end
 
 -- Use a loop to conveniently both setup defined servers
 -- and map buffer local keybindings when the language server attaches
-local servers = { "jsonls", "rls", "tsserver", "clangd", 'gopls', 'graphql', 'bashls' }
+local servers = { "jsonls", "rls", "tsserver", "clangd", 'gopls', 'graphql', 'bashls', 'terraformls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -239,7 +239,7 @@ let g:which_key_map = {
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'p': [':Gpull', 'Git pull'],
   \ 'i': [':Telescope lsp_implementations', 'Implementation'],
-  \ 's': [':Git | wincmd L | vertical resize 60', 'Git status'],
+  \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal', 'Git status'],
   \ 'r': [":Lspsaga rename", 'Rename'],
   \ 't': [':terminal', 'Open a terimnal'],
   \ 'T': [':TagbarToggle', 'Tagbar toggle'],
@@ -285,13 +285,14 @@ let g:lightline.active = {
   \ }
 let g:lightline.inactive = { 'left': [[], ['filename']], 'right': [] }
 let g:lightline.component = {
-  \ 'relativepath': '%{WebDevIconsGetFileTypeSymbol()} %f'
-  \}
+  \ 'relativepath':   "%{winwidth(0) > 70 ? WebDevIconsGetFileTypeSymbol() . ' ' . expand('%') : expand('%:t')}",
+  \ 'gitbranch':      "%{winwidth(0) > 70 ? FugitiveHead() != '' ? ' ' . ' ' . FugitiveHead() : '' : ''}",
+  \ 'readonly':       "%{&readonly ? '' : ''}",
+  \ 'gitsign_status': "%{winwidth(0) > 70 ? get(b:,'gitsigns_status','') : ''}",
+  \ 'lineinfo': '%{winwidth(0)>70?line(".").":".col("."):""}'
+  \ }
 let g:lightline.component_function = {
-  \ 'readonly': 'LightlineReadonly',
-  \ 'mode': 'LightlineMode',
-  \ 'gitbranch': 'FugitiveHead',
-  \ 'gitsign_status': 'GitSignStatus',
+  \ 'mode':           'LightlineMode',
   \ }
 let g:lightline.component_expand = {
   \  'linter_warnings': 'LightlineLinterWarnings',
@@ -348,8 +349,8 @@ autocmd  FileType which_key set laststatus=0
 " HOTKEYS {{{
 inoremap <Tab> <C-R>=SmartTab()<CR>
 " Map NvimTreeToggle on Control-b
-map <C-b> :NvimTreeToggle<CR>
-imap <C-b> <C-O>:NvimTreeToggle<CR>
+map <silent> <C-b> :call CloseSidewinsButNoNvimTree()<CR>
+imap <silent> <C-b> <C-O> :call CloseSidewinsButNoNvimTree()<CR>
 " Tab movement
 noremap <A-l> :BufferLineCycleNext<CR>
 noremap <A-h> :BufferLineCyclePrev<CR>
@@ -392,7 +393,7 @@ map = :resize -4<CR>
 map - :resize +4<CR>
 map + :vertical resize -5<CR>
 map _ :vertical resize +5<CR>
-map ` :call OpenTODO()<CR>
+map <silent> ` :call OpenTODO()<CR>
 " }}}
 
 
@@ -403,8 +404,18 @@ command PrettyJSON %!python -m json.tool
 
 
 " FUNCTIONS {{{
-function! GitSignStatus()
-  return get(b:,'gitsigns_status','')
+function! CloseSidewins()
+  silent! bd */.git/index
+  silent! bd */index.wiki
+  silent! bd *.wiki
+  lua require 'nvim-tree'.close()
+endfunction
+
+function! CloseSidewinsButNoNvimTree()
+  silent! bd */.git/index
+  silent! bd */index.wiki
+  silent! bd *.wiki
+  lua require 'nvim-tree'.toggle()
 endfunction
 
 function! SmartTab()
@@ -416,6 +427,10 @@ function! SmartTab()
 endfunction
 
 function! FileSize() abort
+    if (winwidth(0) < 70)
+      return ''
+    endif
+
     let l:bytes = getfsize(expand('%p'))
     if (l:bytes >= 1024)
         let l:kbytes = l:bytes / 1025
@@ -437,14 +452,6 @@ function! FileSize() abort
     endif
 endfunction
 
-function! LightlineReadonly()
-  return &readonly ? '' : ''
-endfunction
-
-function! LightlineGitBranch()
-  return FugitiveStatusline()
-endfunction
-
 function! LightlineMode()
   return &ft == 'NvimTree' ? '  ' :
         \ &ft == 'fugitive' ? '  ' :
@@ -455,17 +462,18 @@ function! LightlineMode()
         \ &ft == 'undotree' ? '  ' :
         \ &ft == 'vimwiki' ? '  ' :
         \ &ft == 'vim-plug' ? '  ' :
-        \ winwidth(0) > 60 ? lightline#mode() : ''
+        \ winwidth(0) > 70 ? lightline#mode() : ''
 endfunction
 
 function! OpenTODO()
+  call CloseSidewins()
   vsplit
-  wincmd p
-  vertical resize 50
   execute 'VimwikiIndex'
-  setlocal wrap
-  setlocal signcolumn=no
-  setlocal statusline=\ \ TODO
+  wincmd H
+  vertical resize 40
+  set winhl=Normal:NvimTreeNormal
+  set wrap
+  set signcolumn=no
   execute 'autocmd! WinLeave <buffer=' . bufnr('%') . '> exit'
 endfunction
 
@@ -600,21 +608,6 @@ if (exists('g:lightline'))
       \ s:selection.cterm
     \ ] ]
   let s:palette.visual.right = s:palette.visual.left
-
-  let s:palette.command.left = [ [
-      \ s:bg.gui,
-      \ s:yellow.gui,
-      \ g:material_theme_style == 'lighter' ?
-        \ s:white.cterm :
-        \ s:black.cterm,
-      \ s:blue.cterm
-    \ ], [
-      \ s:fg.gui,
-      \ s:line_numbers.gui,
-      \ s:fg.cterm,
-      \ s:selection.cterm
-    \ ] ]
-  let s:palette.command.right = s:palette.command.left
 
   let s:palette.terminal.left = [ [
       \ s:bg.gui,
