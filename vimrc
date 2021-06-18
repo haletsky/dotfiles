@@ -227,6 +227,9 @@ let g:netrw_winsize = 25
 
 
 " PLUGIN CONFIGURATION {{{
+" Vimwiki
+let g:vimwiki_ext2syntax = {}
+" AsyncTask
 let g:asyncrun_open = 6
 let g:asyncrun_rootmarks = ['.git']
 let g:asynctasks_term_pos = 'right'
@@ -329,6 +332,7 @@ highlight NonText guifg=bg
 
 
 " AUTOCMDS {{{
+autocmd VimEnter * silent cd %:p:h
 " Remove traling spaces after save
 autocmd BufWritePre * %s/\s\+$//e
 " Use tabs vs spaces in Go files
