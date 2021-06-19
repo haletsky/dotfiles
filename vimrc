@@ -32,6 +32,7 @@ Plug 'folke/trouble.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'hashivim/vim-terraform'
 " Plug 'wakatime/vim-wakatime'
 call plug#end()
 " }}}
