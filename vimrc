@@ -33,6 +33,9 @@ Plug 'kyazdani42/nvim-tree.lua'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'hashivim/vim-terraform'
+Plug 'plasticboy/vim-markdown'
+Plug 'rcarriga/nvim-notify'
+" Plug 'edluffy/hologram.nvim'
 " Plug 'wakatime/vim-wakatime'
 call plug#end()
 " }}}
@@ -41,6 +44,7 @@ call plug#end()
 " LUA SCRIPTS {{{
 lua << EOF
 
+vim.notify = require('notify')
 require('gitsigns').setup{}
 require("bufferline").setup({
   options = {
@@ -63,6 +67,14 @@ require("bufferline").setup({
     }, {
       filetype = "fugitiveblame",
       text = "Git blame",
+      text_align = "center"
+    }, {
+      filetype = "gitcommit",
+      text = "GIT commit",
+      text_align = "center"
+    }, {
+      filetype = "vim-plug",
+      text = "VIM Plug",
       text_align = "center"
     }},
     custom_filter = function(buf, buf_nums)
@@ -112,7 +124,7 @@ end
 
 -- Use a loop to conveniently both setup defined servers
 -- and map buffer local keybindings when the language server attaches
-local servers = { "jsonls", "rls", "tsserver", "clangd", 'gopls', 'graphql', 'bashls', 'terraformls' }
+local servers = { 'rls', 'clangd', 'graphql', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -164,10 +176,12 @@ endif
 
 syntax on
 try
+  let &shell='/bin/zsh -i'
   let g:material_italic_comments = v:true
-  " let g:material_borders = v:true
+  let g:material_borders = v:true
   " let g:material_contrast = v:true
   let g:material_style = 'darker'
+  set guifont=FiraCode\ Nerd\ Font:h16
   colorscheme material
 catch
 endtry
@@ -187,12 +201,12 @@ set hidden
 set ignorecase
 set langmenu=en
 set laststatus=2
-set list listchars=tab:\▏\ ,trail:⎵,precedes:<,extends:>
+set list listchars=tab:\ \ ,trail:⎵,precedes:<,extends:>
 set mouse=a
 set nobackup
 set nocompatible
 set noincsearch
-set nonumber
+set number
 set noshowcmd
 set noshowmode
 set noswapfile
@@ -228,6 +242,7 @@ let g:netrw_winsize = 25
 
 
 " PLUGIN CONFIGURATION {{{
+let g:scrollview_excluded_filetypes = ['NvimTree']
 " Vimwiki
 let g:vimwiki_ext2syntax = {}
 " AsyncTask
@@ -241,9 +256,9 @@ let g:which_key_map = {
   \ 'P': [':Git push', 'Git push'],
   \ 'd': [':LspTrouble', 'Diagnostics'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
-  \ 'p': [':Gpull', 'Git pull'],
+  \ 'p': [':Git pull', 'Git pull'],
   \ 'i': [':Telescope lsp_implementations', 'Implementation'],
-  \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal', 'Git status'],
+  \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways', 'Git status'],
   \ 'r': [":Lspsaga rename", 'Rename'],
   \ 't': [':terminal', 'Open a terimnal'],
   \ 'T': [':TagbarToggle', 'Tagbar toggle'],
@@ -255,7 +270,7 @@ let g:which_key_map['g'] = {
   \ 'n': [']c', 'Jump to next hunk'],
   \ 'p': [':Gitsigns prev_hunk', 'Jump to previous hunk'],
   \ 'P': [':Gitsigns preview_hunk', 'Preview hunk'],
-  \ 'b': [':Gblame', 'Blame'],
+  \ 'b': [':Git blame', 'Blame'],
   \ 'd': [':Gdiff', 'Diff'],
   \ 'l': [':Telescope git_commits', 'Log'],
   \ 'B': [':Telescope git_branches', 'Branches'],
@@ -289,8 +304,8 @@ let g:lightline.active = {
   \ }
 let g:lightline.inactive = { 'left': [[], ['filename']], 'right': [] }
 let g:lightline.component = {
-  \ 'relativepath':   "%{winwidth(0) > 70 ? WebDevIconsGetFileTypeSymbol() . ' ' . expand('%') : expand('%:t')}",
-  \ 'gitbranch':      "%{winwidth(0) > 70 ? FugitiveHead() != '' ? ' ' . ' ' . FugitiveHead() : '' : ''}",
+  \ 'relativepath':   "%{winwidth(0) > 70 ? WebDevIconsGetFileTypeSymbol() . ' ' . expand('%:.') : expand('%:t')}",
+  \ 'gitbranch':      "%{winwidth(0) > 70 ? FugitiveHead() != '' ? '  ' . ' ' . FugitiveHead() : '' : ''}",
   \ 'readonly':       "%{&readonly ? '' : ''}",
   \ 'gitsign_status': "%{winwidth(0) > 70 ? get(b:,'gitsigns_status','') : ''}",
   \ 'lineinfo': '%{winwidth(0)>70?line(".").":".col("."):""}'
@@ -321,7 +336,7 @@ let g:lightline.mode_map = {
   \ 't': ' T ',
   \ }
 " Python provider
-let g:python_host_prog  = '/usr/bin/python2.7'
+let g:python_host_prog  = '/usr/bin/python'
 let g:python3_host_prog = '/usr/bin/python3'
 " }}}
 
@@ -339,7 +354,7 @@ autocmd BufWritePre * %s/\s\+$//e
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
 " Remove signcolunm from certain filetypes
-autocmd FileType fugitive,gitcommit,help,vimwiki setlocal signcolumn=no
+autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug setlocal signcolumn=no nonumber wrap linebreak
 autocmd TermOpen * setlocal signcolumn=no
 " Move cursor to last edited line when open file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -348,6 +363,7 @@ autocmd VimEnter * silent call InitializeProjectTasks()
 autocmd! FileType which_key
 autocmd  FileType which_key set laststatus=0
   \| autocmd BufLeave <buffer> set laststatus=2
+autocmd TermOpen * setlocal nonumber
 " }}}
 
 
@@ -399,6 +415,9 @@ map - :resize +4<CR>
 map + :vertical resize -5<CR>
 map _ :vertical resize +5<CR>
 map <silent> ` :call OpenTODO()<CR>
+map <C-LeftMouse> <Nop>
+vnoremap * y/\V<C-R>=escape(@",'/\')<CR><CR>
+nnoremap <silent> <A-D> :call CloseBuffer()<CR>
 " }}}
 
 
@@ -420,6 +439,7 @@ function! CloseSidewinsButNoNvimTree()
   silent! bd */.git/index
   silent! bd */index.wiki
   silent! bd *.wiki
+  set equalalways
   lua require 'nvim-tree'.toggle()
 endfunction
 
@@ -495,6 +515,11 @@ function! InitializeProjectTasks()
   endfor
 endfunction
 
+function! CloseBuffer()
+  let l:bufnum = bufnr()
+  execute 'bp'
+  execute 'bd' . l:bufnum
+endfunction
 " }}}
 
 
