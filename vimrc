@@ -13,10 +13,8 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'liuchengxu/vim-which-key'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-surround'
-Plug 'mbbill/undotree'
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
-Plug 'preservim/tagbar'
 Plug 'jparise/vim-graphql'
 Plug 'tpope/vim-fugitive'
 Plug 'nvim-lua/plenary.nvim'
@@ -24,17 +22,21 @@ Plug 'hrsh7th/nvim-compe'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-media-files.nvim'
+Plug 'ANGkeith/telescope-terraform-doc.nvim'
 Plug 'dstein64/nvim-scrollview', { 'branch': 'main' }
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
-Plug 'glepnir/lspsaga.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'hashivim/vim-terraform'
 Plug 'plasticboy/vim-markdown'
-Plug 'rcarriga/nvim-notify'
+" Plug 'mbbill/undotree'
+" Plug 'rcarriga/nvim-notify'
+" Plug 'preservim/tagbar'
+" Plug 'lukas-reineke/indent-blankline.nvim'
 " Plug 'edluffy/hologram.nvim'
 " Plug 'wakatime/vim-wakatime'
 call plug#end()
@@ -44,10 +46,45 @@ call plug#end()
 " LUA SCRIPTS {{{
 lua << EOF
 
-vim.notify = require('notify')
+require('nvim-tree').setup({
+  diagnostics = {
+    enable = true,
+  },
+  view = {
+    width = 40,
+  },
+  open_on_setup = false,
+  open_on_setup_file = false,
+  actions = {
+    use_system_clipboard = true,
+    open_file = {
+      quit_on_open = false,
+      resize_window = true,
+      window_picker = {
+        enable = false,
+      }
+    }
+  },
+  renderer = {
+    icons = {
+        show = {
+          folder_arrow = false,
+        }
+    },
+    indent_markers = {
+      enable = true,
+      icons = {
+        corner = "└",
+        edge = "│ ",
+        none = "  ",
+      },
+    },
+  },
+})
 require('gitsigns').setup{}
 require("bufferline").setup({
   options = {
+    separator_style = "slant",
     sort_by = function (bufa, bufb)
       return bufa.extension < bufb.extension
     end,
@@ -107,7 +144,7 @@ local on_attach = function(client, bufnr)
   buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- Set autocommands conditional on server_capabilities
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.document_highlight then
     vim.api.nvim_exec([[
       hi LspReferenceRead cterm=bold ctermbg=red guibg=#2c2c2c
       hi LspReferenceText cterm=bold ctermbg=red guibg=#2c2c2c
@@ -115,7 +152,6 @@ local on_attach = function(client, bufnr)
       augroup lsp_document_highlight
         autocmd! * <buffer>
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-        autocmd CursorHold <buffer> lua require'lspsaga.diagnostic'.show_line_diagnostics()
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
     ]], false)
@@ -124,7 +160,7 @@ end
 
 -- Use a loop to conveniently both setup defined servers
 -- and map buffer local keybindings when the language server attaches
-local servers = { 'rls', 'clangd', 'graphql', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls' }
+local servers = { 'clangd', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -153,6 +189,9 @@ require'compe'.setup {
     ultisnips = true;
   };
 }
+
+require('telescope').load_extension('terraform_doc')
+require('telescope').load_extension('media_files')
 EOF
 " }}}
 
@@ -176,12 +215,10 @@ endif
 
 syntax on
 try
-  let &shell='/bin/zsh -i'
+  let &shell='/bin/zsh'
   let g:material_italic_comments = v:true
   let g:material_borders = v:true
-  " let g:material_contrast = v:true
   let g:material_style = 'darker'
-  set guifont=FiraCode\ Nerd\ Font:h16
   colorscheme material
 catch
 endtry
@@ -200,7 +237,7 @@ set foldnestmax=10
 set hidden
 set ignorecase
 set langmenu=en
-set laststatus=2
+set laststatus=3
 set list listchars=tab:\ \ ,trail:⎵,precedes:<,extends:>
 set mouse=a
 set nobackup
@@ -211,9 +248,9 @@ set noshowcmd
 set noshowmode
 set noswapfile
 set nowrap
+set makeprg=make
 set nowritebackup
 set sessionoptions-=blank
-set shiftwidth=2
 set shortmess+=c
 set shortmess+=F
 set signcolumn=yes
@@ -242,7 +279,7 @@ let g:netrw_winsize = 25
 
 
 " PLUGIN CONFIGURATION {{{
-let g:scrollview_excluded_filetypes = ['NvimTree']
+let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit']
 " Vimwiki
 let g:vimwiki_ext2syntax = {}
 " AsyncTask
@@ -253,17 +290,22 @@ let g:asynctasks_term_pos = 'right'
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
 let g:which_key_map = {
+  \ 'name': 'menu',
   \ 'P': [':Git push', 'Git push'],
-  \ 'd': [':LspTrouble', 'Diagnostics'],
+  \ 'd': [':Trouble', 'Diagnostics'],
+  \ 'c': [':Telescope lsp_code_actions layout_strategy=vertical', 'Code Action'],
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'p': [':Git pull', 'Git pull'],
   \ 'i': [':Telescope lsp_implementations', 'Implementation'],
+  \ 'f': [':exec "lua vim.lsp.buf.formatting_sync()"', 'Format a file'],
+  \ 'F': [':NvimTreeFindFile', 'Open current File in Tree'],
   \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways', 'Git status'],
-  \ 'r': [":Lspsaga rename", 'Rename'],
+  \ 'r': [':exec "lua vim.lsp.buf.rename()"', 'Rename'],
   \ 't': [':terminal', 'Open a terimnal'],
-  \ 'T': [':TagbarToggle', 'Tagbar toggle'],
-  \ 'u': [':UndotreeToggle | wincmd t', 'Undo tree']
+  \ 'w': [':setlocal wrap linebreak', 'Wrap text in window']
   \ }
+  "\ 'T': [':TagbarToggle', 'Tagbar toggle'],
+  "\ 'u': [':UndotreeToggle | wincmd t', 'Undo tree'],
 let g:which_key_map['m'] = { 'name': '+tasks-menu' }
 let g:which_key_map['g'] = {
   \ 'name': '+git-menu',
@@ -271,6 +313,7 @@ let g:which_key_map['g'] = {
   \ 'p': [':Gitsigns prev_hunk', 'Jump to previous hunk'],
   \ 'P': [':Gitsigns preview_hunk', 'Preview hunk'],
   \ 'b': [':Git blame', 'Blame'],
+  \ 'f': [':Git fetch', 'Fetch'],
   \ 'd': [':Gdiff', 'Diff'],
   \ 'l': [':Telescope git_commits', 'Log'],
   \ 'B': [':Telescope git_branches', 'Branches'],
@@ -284,11 +327,9 @@ let g:DevIconsEnableFoldersOpenClose = 1
 let g:NERDDefaultAlign = "left"
 let g:NERDSpaceDelims = 1
 " NvimTree
-let g:nvim_tree_width = 40
-let g:nvim_tree_lsp_diagnostics = 1
 let g:nvim_tree_group_empty = 1
 let g:nvim_tree_add_trailing = 1
-let g:nvim_tree_auto_close = 1
+let g:nvim_tree_width = 40
 let g:nvim_tree_indent_markers = 1
 let g:nvim_tree_disable_window_picker = 1
 let g:nvim_tree_icons = { 'default': '' }
@@ -302,13 +343,13 @@ let g:lightline.active = {
   \  'left': [ [ 'mode', 'paste' ], [ 'gitbranch', 'modified', 'readonly' ], ['relativepath'] ],
   \  'right': [ [ 'percent', 'lineinfo' ], ['gitsign_status'] , [ 'buffersize' ] ]
   \ }
-let g:lightline.inactive = { 'left': [[], ['filename']], 'right': [] }
+" let g:lightline.inactive = { 'left': [[], ['filename']], 'right': [] }
 let g:lightline.component = {
-  \ 'relativepath':   "%{winwidth(0) > 70 ? WebDevIconsGetFileTypeSymbol() . ' ' . expand('%:.') : expand('%:t')}",
-  \ 'gitbranch':      "%{winwidth(0) > 70 ? FugitiveHead() != '' ? '  ' . ' ' . FugitiveHead() : '' : ''}",
+  \ 'relativepath':   "%{WebDevIconsGetFileTypeSymbol() . ' ' . expand('%:.')}",
+  \ 'gitbranch':      "%{FugitiveHead() != '' ? '  ' . ' ' . FugitiveHead() : ''}",
   \ 'readonly':       "%{&readonly ? '' : ''}",
-  \ 'gitsign_status': "%{winwidth(0) > 70 ? get(b:,'gitsigns_status','') : ''}",
-  \ 'lineinfo': '%{winwidth(0)>70?line(".").":".col("."):""}'
+  \ 'gitsign_status': "%{get(b:,'gitsigns_status','')}",
+  \ 'lineinfo': '%{line(".").":".col(".")}'
   \ }
 let g:lightline.component_function = {
   \ 'mode':           'LightlineMode',
@@ -344,6 +385,11 @@ let g:python3_host_prog = '/usr/bin/python3'
 " HIGHLIGHTS {{{
 highlight HighlightedyankRegion term=bold guifg=#000000 guibg=#e5c07b
 highlight NonText guifg=bg
+augroup BgHighlight
+    autocmd!
+    autocmd WinEnter * set cul
+    autocmd WinLeave * set nocul
+augroup END
 " }}}
 
 
@@ -354,7 +400,7 @@ autocmd BufWritePre * %s/\s\+$//e
 " Use tabs vs spaces in Go files
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
 " Remove signcolunm from certain filetypes
-autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug setlocal signcolumn=no nonumber wrap linebreak
+autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug,markdown setlocal signcolumn=no nonumber wrap linebreak
 autocmd TermOpen * setlocal signcolumn=no
 " Move cursor to last edited line when open file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -362,7 +408,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd VimEnter * silent call InitializeProjectTasks()
 autocmd! FileType which_key
 autocmd  FileType which_key set laststatus=0
-  \| autocmd BufLeave <buffer> set laststatus=2
+  \| autocmd BufLeave <buffer> set laststatus=3
 autocmd TermOpen * setlocal nonumber
 " }}}
 
@@ -387,19 +433,18 @@ nmap <Space> :
 " Comment code
 map <C-c> <Plug>NERDCommenterToggle
 " Finders
-map <C-f> :Telescope live_grep<CR>
-map <C-p> :Telescope find_files<CR>
-map <C-g> :Telescope symbols<CR>
-map <C-q> :call CocAction('doQuickfix')<CR>
+map <C-f> <cmd>Telescope live_grep<CR>
+map <C-p> <cmd>Telescope find_files find_command=rg,--ignore,--hidden,--files,--glob,!.git<CR>
+map <C-g> <cmd>Telescope symbols<CR>
 " Which-key menu
 nnoremap m :WhichKey! g:which_key_map<CR>
 " Move to word in file
 map f <Plug>(easymotion-bd-W)
-nnoremap <silent><nowait> <F1> <cmd>lua require('lspsaga.hover').render_hover_doc()<CR>
-nnoremap <silent><nowait> <F2> :Telescope lsp_definitions<CR>
-nnoremap <silent><nowait> <F3> :Telescope lsp_references<CR>
+nnoremap <silent><nowait> <F1> <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent><nowait> <F2> <cmd>Telescope lsp_definitions<CR>
+nnoremap <silent><nowait> <F3> <cmd>Telescope lsp_references<CR>
 " nnoremap <silent><nowait> <F4> :Telescope lsp_code_actions<CR>
-nnoremap <silent><nowait> <F4> <cmd>lua require('lspsaga.codeaction').code_action()<CR>
+nnoremap <silent><nowait> <F4> <cmd>lua vim.lsp.buf.code_action()<CR>
 map gl $
 map gh 0
 map <C-T> :terminal<CR>
@@ -429,14 +474,14 @@ command PrettyJSON %!python -m json.tool
 
 " FUNCTIONS {{{
 function! CloseSidewins()
-  silent! bd */.git/index
+  silent! bd */.git//
   silent! bd */index.wiki
   silent! bd *.wiki
-  lua require 'nvim-tree'.close()
+  lua require 'nvim-tree.view'.close()
 endfunction
 
 function! CloseSidewinsButNoNvimTree()
-  silent! bd */.git/index
+  silent! bd */.git//
   silent! bd */index.wiki
   silent! bd *.wiki
   set equalalways
@@ -452,10 +497,6 @@ function! SmartTab()
 endfunction
 
 function! FileSize() abort
-    if (winwidth(0) < 70)
-      return ''
-    endif
-
     let l:bytes = getfsize(expand('%p'))
     if (l:bytes >= 1024)
         let l:kbytes = l:bytes / 1025
@@ -486,8 +527,7 @@ function! LightlineMode()
         \ &ft == 'list' ? '   ' :
         \ &ft == 'undotree' ? '  ' :
         \ &ft == 'vimwiki' ? '  ' :
-        \ &ft == 'vim-plug' ? '  ' :
-        \ winwidth(0) > 70 ? lightline#mode() : ''
+        \ &ft == 'vim-plug' ? '  ' : lightline#mode()
 endfunction
 
 function! OpenTODO()
@@ -499,7 +539,7 @@ function! OpenTODO()
   set winhl=Normal:NvimTreeNormal
   set wrap
   set signcolumn=no
-  execute 'autocmd! WinLeave <buffer=' . bufnr('%') . '> exit'
+  execute 'autocmd! WinLeave <buffer=' . bufnr('%') . '> silent! exit'
 endfunction
 
 function! InitializeProjectTasks()
@@ -538,6 +578,7 @@ let s:line_numbers = { 'gui': '#424242', 'cterm': 145 }
 let s:line_highlight = { 'gui': '#1a2327', 'cterm': 235 }
 let s:white = { 'gui': '#EEFFFF', 'cterm': 231 }
 let s:black = { 'gui': '#000000', 'cterm': 232 }
+let s:darker = { 'gui': '#1a1a1a', 'cterm': 232 }
 let s:red = { 'gui': '#F07178', 'cterm': 203 }
 let s:orange = { 'gui': '#F78C6C', 'cterm': 209 }
 let s:yellow = { 'gui': '#FFCB6B', 'cterm': 11 }
@@ -571,7 +612,7 @@ if (exists('g:lightline'))
 
   let s:palette.normal.middle = [ [
       \ s:fg.gui,
-      \ s:bg.gui,
+      \ s:darker.gui,
       \ s:fg.cterm,
       \ s:selection.cterm
     \ ] ]
@@ -665,7 +706,7 @@ if (exists('g:lightline'))
 
   let s:palette.inactive.middle = [ [
       \ s:fg.gui,
-      \ s:bg.gui
+      \ s:darker.gui
     \ ] ]
 
   let g:lightline#colorscheme#material_vim#palette = lightline#colorscheme#fill(s:palette)
