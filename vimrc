@@ -18,7 +18,7 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'jparise/vim-graphql'
 Plug 'tpope/vim-fugitive'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'hrsh7th/nvim-compe'
+" Plug 'hrsh7th/nvim-compe'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -33,6 +33,25 @@ Plug 'akinsho/nvim-bufferline.lua'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'hashivim/vim-terraform'
 Plug 'plasticboy/vim-markdown'
+" Plug 'TimUntersberger/neogit'
+Plug 'sindrets/diffview.nvim'
+" Plug 'github/copilot.vim'
+" Plug 'zbirenbaum/copilot.lua'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
+Plug 'hrsh7th/nvim-cmp'
+
+" Plug 'hrsh7th/cmp-copilot'
+" Plug 'zbirenbaum/copilot-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+Plug 'onsails/lspkind.nvim'
+
+" For vsnip users.
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 " Plug 'mbbill/undotree'
 " Plug 'rcarriga/nvim-notify'
 " Plug 'preservim/tagbar'
@@ -46,6 +65,87 @@ call plug#end()
 " LUA SCRIPTS {{{
 lua << EOF
 
+-- require'copilot'.setup{}
+require'nvim-web-devicons'.setup{}
+-- require("copilot_cmp").setup{}
+
+local has_words_before = function()
+  if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
+end
+
+local feedkey = function(key, mode)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+end
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      end,
+    },
+    window = {
+      --- completion = cmp.config.window.bordered(),
+      --- documentation = cmp.config.window.bordered(),
+    },
+    view = {
+      entries = "custom" -- can be "custom", "wildmenu" or "native"
+    },
+    preselect = cmp.PreselectMode.None,
+    --- formatting = {
+      --- format = require'lspkind'.cmp_format({ mode = 'text' }),
+    --- },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      --- ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          local entry = cmp.get_selected_entry()
+          if not entry then
+	          cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
+	        else
+	          cmp.confirm()
+	        end
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+      ["<S-Tab>"] = cmp.mapping(function()
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif vim.fn["vsnip#jumpable"](-1) == 1 then
+          feedkey("<Plug>(vsnip-jump-prev)", "")
+        end
+      end, { "i", "s" }),
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp', group_index = 0 },
+      -- { name = 'vsnip' }, -- For vsnip users.
+      { name = 'nvim_lsp_signature_help' },
+      -- { name = 'nvim_lsp_document_symbol' },
+      -- { name = 'copilot', group_index = 2 },
+      -- { name = 'luasnip' }, -- For luasnip users.
+      -- { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+require('diffview').setup{}
+--- require('neogit').setup{
+  --- disable_hint = true,
+  --- integrations = {
+    --- diffview = true
+  --- },
+--- }
+
 require('nvim-tree').setup({
   diagnostics = {
     enable = true,
@@ -53,8 +153,8 @@ require('nvim-tree').setup({
   view = {
     width = 40,
   },
-  open_on_setup = false,
-  open_on_setup_file = false,
+  prefer_startup_root = true,
+  hijack_unnamed_buffer_when_opening = true,
   actions = {
     use_system_clipboard = true,
     open_file = {
@@ -73,11 +173,6 @@ require('nvim-tree').setup({
     },
     indent_markers = {
       enable = true,
-      icons = {
-        corner = "└",
-        edge = "│ ",
-        none = "  ",
-      },
     },
   },
 })
@@ -162,33 +257,11 @@ end
 -- and map buffer local keybindings when the language server attaches
 local servers = { 'clangd', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls' }
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = on_attach }
+  nvim_lsp[lsp].setup {
+          on_attach = on_attach,
+          capabilities = require('cmp_nvim_lsp').default_capabilities(),
+  }
 end
-
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'disable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = true;
-
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    vsnip = true;
-    ultisnips = true;
-  };
-}
 
 require('telescope').load_extension('terraform_doc')
 require('telescope').load_extension('media_files')
@@ -297,9 +370,10 @@ let g:which_key_map = {
   \ 'j': [':%!python -m json.tool', 'Pretty json'],
   \ 'p': [':Git pull', 'Git pull'],
   \ 'i': [':Telescope lsp_implementations', 'Implementation'],
-  \ 'f': [':exec "lua vim.lsp.buf.formatting_sync()"', 'Format a file'],
+  \ 'f': [':exec "lua vim.lsp.buf.format()"', 'Format a file'],
   \ 'F': [':NvimTreeFindFile', 'Open current File in Tree'],
   \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways', 'Git status'],
+  \ 'S': [':call CloseSidewins() | call OpenTODO()', 'Sketch Book'],
   \ 'r': [':exec "lua vim.lsp.buf.rename()"', 'Rename'],
   \ 't': [':terminal', 'Open a terimnal'],
   \ 'w': [':setlocal wrap linebreak', 'Wrap text in window']
@@ -414,7 +488,7 @@ autocmd TermOpen * setlocal nonumber
 
 
 " HOTKEYS {{{
-inoremap <Tab> <C-R>=SmartTab()<CR>
+" inoremap <Tab> <C-R>=SmartTab()<CR>
 " Map NvimTreeToggle on Control-b
 map <silent> <C-b> :call CloseSidewinsButNoNvimTree()<CR>
 imap <silent> <C-b> <C-O> :call CloseSidewinsButNoNvimTree()<CR>
@@ -477,7 +551,7 @@ function! CloseSidewins()
   silent! bd */.git//
   silent! bd */index.wiki
   silent! bd *.wiki
-  lua require 'nvim-tree.view'.close()
+  lua require 'nvim-tree.api'.tree.close()
 endfunction
 
 function! CloseSidewinsButNoNvimTree()
@@ -485,7 +559,7 @@ function! CloseSidewinsButNoNvimTree()
   silent! bd */index.wiki
   silent! bd *.wiki
   set equalalways
-  lua require 'nvim-tree'.toggle()
+  lua require 'nvim-tree.api'.tree.toggle()
 endfunction
 
 function! SmartTab()
