@@ -111,6 +111,7 @@ set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,b
 set wildmenu
 set fillchars=eob:\ ,vert:\│
 set shiftwidth=4 tabstop=4 et
+silent set is hl
 filetype plugin on
 filetype indent on
 if !has('gui_running')
