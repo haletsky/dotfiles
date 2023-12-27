@@ -3,7 +3,7 @@ local function feedkey(key, mode)
 end
 
 local function lsp_on_attach(client, bufnr)
-    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+    -- local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
     buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -21,6 +21,15 @@ local function lsp_on_attach(client, bufnr)
                 augroup END
             ]], false)
     end
+
+    vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+        vim.lsp.diagnostic.on_publish_diagnostics, {
+            -- disable virtual text
+            virtual_text = true,
+            -- show signs
+            signs = false,
+        }
+    )
 end
 
 local function tree_on_attach(bufnr)
@@ -76,7 +85,7 @@ cmp.setup({
         end, { "i", "s" }),
     }),
     sources = cmp.config.sources({
-        { name = 'nvim_lsp',               group_index = 0 },
+        { name = 'nvim_lsp',                group_index = 0 },
         { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp_document_symbol' },
         { name = 'git' },
@@ -201,7 +210,7 @@ require("bufferline").setup({
 
             for i = 1, length, 1 do
                 if i ~= currenttab then
-                    for k, v in pairs(vim.fn.tabpagebuflist(i)) do
+                    for _, v in pairs(vim.fn.tabpagebuflist(i)) do
                         if v == buf then
                             return false
                         end
