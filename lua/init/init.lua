@@ -1,14 +1,8 @@
-function has_words_before()
-    if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
-    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-    return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
-end
-
-function feedkey(key, mode)
+local function feedkey(key, mode)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
 
-function lsp_on_attach(client, bufnr)
+local function lsp_on_attach(client, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
@@ -17,19 +11,19 @@ function lsp_on_attach(client, bufnr)
     -- Set autocommands conditional on server_capabilities
     if client.server_capabilities.document_highlight then
         vim.api.nvim_exec([[
-      hi LspReferenceRead cterm=bold ctermbg=red guibg=#2c2c2c
-      hi LspReferenceText cterm=bold ctermbg=red guibg=#2c2c2c
-      hi LspReferenceWrite cterm=bold ctermbg=red guibg=#2c2c2c
-      augroup lsp_document_highlight
-        autocmd! * <buffer>
-        autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-        autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-      augroup END
-    ]], false)
+            hi LspReferenceRead cterm=bold ctermbg=red guibg=#2c2c2c
+            hi LspReferenceText cterm=bold ctermbg=red guibg=#2c2c2c
+            hi LspReferenceWrite cterm=bold ctermbg=red guibg=#2c2c2c
+            augroup lsp_document_highlight
+                autocmd! * <buffer>
+                autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+                autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+                augroup END
+            ]], false)
     end
 end
 
-function tree_on_attach(bufnr)
+local function tree_on_attach(bufnr)
     local api = require "nvim-tree.api"
     local function opts(desc)
         return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
@@ -45,7 +39,7 @@ function tree_on_attach(bufnr)
 end
 
 local lspkind = require 'lspkind'
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 local cmp = require 'cmp'
 cmp.setup({
     view = {
@@ -53,7 +47,7 @@ cmp.setup({
     },
     preselect = cmp.PreselectMode.None,
     formatting = {
-        format = lspkind.cmp_format({ mode = 'symbol' }), -- can be 'text', 'text_symbol', 'symbol_text', 'symbol'
+        format = lspkind.cmp_format({ mode = 'symbol_text' }), -- can be 'text', 'text_symbol', 'symbol_text', 'symbol'
     },
     mapping = cmp.mapping.preset.insert({
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -83,26 +77,48 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp',               group_index = 0 },
-        -- { name = 'vsnip' }, -- For vsnip users.
         { name = 'nvim_lsp_signature_help' },
-        -- { name = 'nvim_lsp_document_symbol' },
+        { name = 'nvim_lsp_document_symbol' },
+        { name = 'git' },
+        { name = 'path' },
         -- { name = 'copilot', group_index = 2 },
-        -- { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
     }, {
         { name = 'buffer' },
     })
 })
+require("cmp_git").setup()
+cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+        { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+    }, {
+        { name = 'buffer' },
+    })
+})
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    }, {
+        { name = 'cmdline' }
+    })
+})
+cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'buffer' }
+    }
+})
 
-require('diffview').setup {}
---- require('neogit').setup{
---- disable_hint = true,
---- integrations = {
---- diffview = true
---- },
---- }
-
+-- Use a loop to conveniently both setup defined servers
+-- and map buffer local keybindings when the language server attaches
+local nvim_lsp = require('lspconfig')
+local servers = { 'clangd', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls', 'lua_ls' }
+for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {
+        on_attach = lsp_on_attach,
+        capabilities = lsp_capabilities,
+    }
+end
 
 require 'nvim-web-devicons'.setup {}
 require('nvim-tree').setup({
@@ -172,6 +188,7 @@ require("bufferline").setup({
         custom_filter = function(buf, buf_nums)
             if vim.bo[buf].filetype == 'vimwiki' then return false end
             if vim.bo[buf].filetype == 'fugitive' then return false end
+            if vim.bo[buf].filetype == 'gitcommit' then return false end
 
             local length = vim.fn.tabpagenr('$')
             local currenttab = vim.fn.tabpagenr()
@@ -190,17 +207,6 @@ require("bufferline").setup({
         end
     }
 })
-
--- Use a loop to conveniently both setup defined servers
--- and map buffer local keybindings when the language server attaches
-local nvim_lsp = require('lspconfig')
-local servers = { 'clangd', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls', 'lua_ls' }
-for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
-        on_attach = lsp_on_attach,
-        capabilities = capabilities,
-    }
-end
 
 --  require('telescope').load_extension('terraform_doc')
 require('telescope').load_extension('media_files')

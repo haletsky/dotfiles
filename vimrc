@@ -1,5 +1,10 @@
 " PLUGINS: {{{
 call plug#begin('~/.vim/plugins')
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+Plug 'neovim/nvim-lspconfig'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'docunext/closetag.vim'
 Plug 'dstein64/nvim-scrollview', { 'branch': 'main' }
@@ -13,6 +18,7 @@ Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
 Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/nvim-cmp'
+Plug 'petertriho/cmp-git'
 Plug 'itchyny/lightline.vim'
 Plug 'jparise/vim-graphql'
 Plug 'kyazdani42/nvim-tree.lua'
@@ -21,26 +27,18 @@ Plug 'leafgarland/typescript-vim'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'marko-cerovac/material.nvim'
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-telescope/telescope-media-files.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'nvim-treesitter/playground'
 Plug 'onsails/lspkind.nvim'
 Plug 'plasticboy/vim-markdown'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
-Plug 'sindrets/diffview.nvim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 
 " Optional:
-" Plug 'wakatime/vim-wakatime'
-" Plug 'TimUntersberger/neogit'
 " Plug 'github/copilot.vim'
 " Plug 'zbirenbaum/copilot.lua'
 " Plug 'hrsh7th/cmp-copilot'
@@ -73,11 +71,11 @@ endtry
 set autoread
 set background=dark
 set clipboard+=unnamedplus
-set conceallevel=2
 set completeopt=menuone,noselect
+set conceallevel=2
 set cursorline
 set encoding=utf8
-set expandtab
+set fillchars=eob:\ ,vert:\│
 set foldenable
 set foldlevelstart=10
 set foldmethod=syntax
@@ -87,30 +85,26 @@ set ignorecase
 set langmenu=en
 set laststatus=3
 set list listchars=tab:\ \ ,trail:⎵,precedes:<,extends:>
+set makeprg=make
 set mouse=a
 set nobackup
 set nocompatible
-set noincsearch
-set number
 set noshowcmd
 set noshowmode
 set noswapfile
 set nowrap
-set makeprg=make
 set nowritebackup
+set number
 set sessionoptions-=blank
-set shortmess+=c
 set shortmess+=F
+set shortmess+=c
 set signcolumn=yes
-set smarttab
-set tabstop=2
-set undodir=~/.vim/undo-dir
+set smarttab shiftwidth=4 tabstop=4 expandtab
+set undodir=~/.vim/undo
 set undofile
 set updatetime=500
 set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
 set wildmenu
-set fillchars=eob:\ ,vert:\│
-set shiftwidth=4 tabstop=4 et
 silent set is hl
 filetype plugin on
 filetype indent on
@@ -129,14 +123,10 @@ let g:netrw_winsize = 25
 
 
 " PLUGIN CONFIGURATION: {{{
-let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit']
+let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit', 'vimwiki']
 " VimWiki:
 let g:vimwiki_ext2syntax = {}
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
-" AsyncTask:
-let g:asyncrun_open = 6
-let g:asyncrun_rootmarks = ['.git']
-let g:asynctasks_term_pos = 'right'
 " WhichKey:
 let g:which_key_use_floating_win = 0
 let g:which_key_sort_horizontal = 0
