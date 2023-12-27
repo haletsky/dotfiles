@@ -125,6 +125,7 @@ let g:netrw_winsize = 25
 
 " PLUGIN CONFIGURATION: {{{
 let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit', 'vimwiki']
+let g:scrollview_always_show = 1
 " VimWiki:
 let g:vimwiki_ext2syntax = {}
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
