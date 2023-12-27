@@ -1,7 +1,3 @@
-local function feedkey(key, mode)
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-end
-
 local function lsp_on_attach(client, bufnr)
     -- local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -30,21 +26,6 @@ local function lsp_on_attach(client, bufnr)
             signs = false,
         }
     )
-end
-
-local function tree_on_attach(bufnr)
-    local api = require "nvim-tree.api"
-    local function opts(desc)
-        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-    end
-
-    -- default mappings
-    api.config.mappings.default_on_attach(bufnr)
-
-    -- custom mappings
-    vim.keymap.set('n', 'm', function()
-        vim.cmd('WhichKey! g:which_key_map')
-    end, opts('WhichKey'))
 end
 
 local lspkind = require 'lspkind'
@@ -140,97 +121,7 @@ for _, lsp in ipairs(servers) do
     }
 end
 
-require 'nvim-web-devicons'.setup {}
-require('nvim-tree').setup({
-    on_attach = tree_on_attach,
-    diagnostics = {
-        enable = true,
-    },
-    view = {
-        width = 40,
-    },
-    prefer_startup_root = true,
-    hijack_unnamed_buffer_when_opening = true,
-    actions = {
-        use_system_clipboard = true,
-        open_file = {
-            quit_on_open = false,
-            resize_window = true,
-            window_picker = {
-                enable = false,
-            }
-        }
-    },
-    renderer = {
-        icons = {
-            show = {
-                folder_arrow = false,
-            }
-        },
-        indent_markers = {
-            enable = true,
-        },
-    },
-})
-require('gitsigns').setup {}
-require("bufferline").setup({
-    options = {
-        separator_style = "slant",
-        sort_by = function(bufa, bufb)
-            return bufa.extension < bufb.extension
-        end,
-        diagnostics = "nvim_lsp",
-        offsets = { {
-            filetype = "NvimTree",
-            text = "File Explorer",
-            text_align = "center"
-        }, {
-            filetype = "fugitive",
-            text = "GIT",
-            text_align = "center"
-        }, {
-            filetype = "vimwiki",
-            text = "Sketch Book",
-            text_align = "center"
-        }, {
-            filetype = "fugitiveblame",
-            text = "Git blame",
-            text_align = "center"
-        }, {
-            filetype = "gitcommit",
-            text = "GIT commit",
-            text_align = "center"
-        }, {
-            filetype = "vim-plug",
-            text = "VIM Plug",
-            text_align = "center"
-        } },
-        custom_filter = function(buf, buf_nums)
-            if vim.bo[buf].filetype == 'vimwiki' then return false end
-            if vim.bo[buf].filetype == 'fugitive' then return false end
-            if vim.bo[buf].filetype == 'gitcommit' then return false end
-
-            local length = vim.fn.tabpagenr('$')
-            local currenttab = vim.fn.tabpagenr()
-
-            for i = 1, length, 1 do
-                if i ~= currenttab then
-                    for _, v in pairs(vim.fn.tabpagebuflist(i)) do
-                        if v == buf then
-                            return false
-                        end
-                    end
-                end
-            end
-
-            return true
-        end
-    }
-})
-
---  require('telescope').load_extension('terraform_doc')
-require('telescope').load_extension('media_files')
-
+-- Update diagnostic signs
 local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type

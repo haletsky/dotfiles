@@ -52,7 +52,12 @@ call plug#end()
 
 " LOAD LUA CONFIG: {{{
 lua << EOF
-require 'init'
+require'telescope'.setup{}
+require'telescope'.load_extension'media_files'
+require'gitsigns'.setup{}
+require'custom-lsp'
+require'custom-bufferline'
+require'custom-nvim-tree'
 EOF
 " }}}
 

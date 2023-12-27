@@ -1,13 +1,13 @@
 #! /usr/bin/bash
 
-mkdir -p ~/.config/nvim/lua/init
-mkdir -p ~/.config/kitty/lua/init
+mkdir -p ~/.config/nvim/lua
+mkdir -p ~/.config/kitty
 mkdir -p ~/.vim/wiki
 mkdir -p ~/.vim/dict
 mkdir -p ~/.vim/undo
 
 ln -s ./vimrc ~/.config/nvim/init.vim
-ln -s ./lua/init/init.lua ~/.config/nvim/lua/init/init.lua
+ln -s ./lua ~/.config/nvim/lua
 ln -s ./zshrc ~/.zshrc
 ln -s ./vimrc ~/.vimrc
 ln -s ./kitty.conf ~/.config/kitty/kitty.conf
