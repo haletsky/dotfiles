@@ -1,5 +1,11 @@
-require("bufferline").setup({
+local bufferline = require("bufferline")
+bufferline.setup({
     options = {
+        style_preset = bufferline.style_preset.no_italic,
+        themable = true,
+        show_buffer_icons = false, -- disable filetype icons for buffers
+        show_buffer_close_icons = false,
+        show_close_icon = false,
         separator_style = "slant",
         sort_by = function(bufa, bufb)
             return bufa.extension < bufb.extension
@@ -8,32 +14,35 @@ require("bufferline").setup({
         offsets = { {
             filetype = "NvimTree",
             text = "File Explorer",
-            text_align = "center"
+            text_align = "center",
         }, {
             filetype = "fugitive",
             text = "GIT",
-            text_align = "center"
+            text_align = "center",
         }, {
             filetype = "vimwiki",
             text = "Sketch Book",
-            text_align = "center"
+            text_align = "center",
         }, {
             filetype = "fugitiveblame",
             text = "Git blame",
-            text_align = "center"
+            text_align = "center",
         }, {
             filetype = "gitcommit",
             text = "GIT commit",
-            text_align = "center"
+            text_align = "center",
         }, {
             filetype = "vim-plug",
             text = "VIM Plug",
-            text_align = "center"
+            text_align = "center",
         } },
         custom_filter = function(buf, _)
-            if vim.bo[buf].filetype == 'vimwiki' then return false end
-            if vim.bo[buf].filetype == 'fugitive' then return false end
-            if vim.bo[buf].filetype == 'gitcommit' then return false end
+            local arr = { 'vimwiki', 'fugitive', 'fugitiveblame', 'gitcommit', 'NvimTree' }
+            for _, value in pairs(arr) do
+                if vim.bo[buf].filetype == value then
+                    return false
+                end
+            end
 
             local length = vim.fn.tabpagenr('$')
             local currenttab = vim.fn.tabpagenr()

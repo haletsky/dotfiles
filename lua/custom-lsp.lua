@@ -44,6 +44,10 @@ cmp.setup({
             vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
         end,
     },
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
     mapping = cmp.mapping.preset.insert({
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -73,7 +77,7 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp',                group_index = 0 },
         { name = 'nvim_lsp_signature_help' },
-        { name = 'nvim_lsp_document_symbol' },
+        -- { name = 'nvim_lsp_document_symbol' },
         { name = 'git' },
         { name = 'path' },
         -- { name = 'copilot', group_index = 2 },
@@ -113,7 +117,7 @@ cmp.setup.cmdline({ '/', '?' }, {
 -- Use a loop to conveniently both setup defined servers
 -- and map buffer local keybindings when the language server attaches
 local nvim_lsp = require('lspconfig')
-local servers = { 'clangd', 'jsonls', 'tsserver', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls', 'lua_ls' }
+local servers = { 'clangd', 'jsonls', 'ts_ls', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls', 'lua_ls', 'csharp_ls' }
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
         on_attach = lsp_on_attach,
@@ -122,7 +126,7 @@ for _, lsp in ipairs(servers) do
 end
 
 -- Update diagnostic signs
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type
     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
