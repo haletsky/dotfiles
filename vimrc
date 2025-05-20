@@ -5,13 +5,13 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
 Plug 'neovim/nvim-lspconfig'
-Plug 'kvrohit/rasmus.nvim'
+Plug 'haletsky/rasmus.nvim'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'docunext/closetag.vim'
 Plug 'dstein64/nvim-scrollview', { 'branch': 'main' }
-Plug 'easymotion/vim-easymotion'
+" Plug 'easymotion/vim-easymotion'
 Plug 'folke/trouble.nvim'
-Plug 'hashivim/vim-terraform'
+" Plug 'hashivim/vim-terraform'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -23,37 +23,31 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'petertriho/cmp-git'
 Plug 'itchyny/lightline.vim'
-Plug 'jparise/vim-graphql'
+" Plug 'jparise/vim-graphql'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'leafgarland/typescript-vim'
+" Plug 'leafgarland/typescript-vim'
 Plug 'lewis6991/gitsigns.nvim'
 " Plug 'liuchengxu/vim-which-key'
 Plug 'nvim-telescope/telescope-media-files.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'onsails/lspkind.nvim'
-Plug 'plasticboy/vim-markdown'
+" Plug 'plasticboy/vim-markdown'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'tpope/vim-rhubarb'
+" Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'stevearc/dressing.nvim'
-Plug 'yetone/avante.nvim'
-Plug 'folke/which-key.nvim'
 Plug 'echasnovski/mini.nvim'
-Plug 'MeanderingProgrammer/render-markdown.nvim'
 Plug 'nvchad/volt'
 Plug 'nvchad/menu'
-
-" Optional:
-" Plug 'github/copilot.vim'
-" Plug 'zbirenbaum/copilot.lua'
-" Plug 'hrsh7th/cmp-copilot'
-" Plug 'zbirenbaum/copilot-cmp'
+Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+Plug 'folke/which-key.nvim'
 call plug#end()
 " }}}
 
@@ -150,69 +144,32 @@ require'trouble'.setup{
 require'custom-lsp'
 require'custom-bufferline'
 require'custom-nvim-tree'
-require'copyright-license'.setup{
-  path =  "/Users/bkhaletskyi/adi/developer-hub",
-  copyright_string = [[
-/**
- * Copyright (c) 2025 Analog Devices, Inc. All Rights Reserved.
- * This software is proprietary and confidential to Analog Devices, Inc. and its licensors.
- */]],
-}
-
+require'custom-which-key'
 require'render-markdown'.setup{
-    heading = {
-        enabled = true,
-        width = 'block',
-    },
-    code = {
-        style = 'normal'
-    },
-}
-local wk = require'which-key'
-wk.setup{
-    triggers = {
-        { "<auto>", mode = "nixsotc" },
-        { "m", mode = { "n", "v" } },
-    }
-}
-wk.add{
-    { "mg", group = 'git' },
-    { 'mgn', "<cmd>exec 'lua require(\"gitsigns\").next_hunk({ preview = true })'<cr>", desc = 'Jump to next hunk' },
-    { 'mgp', "<cmd>Gitsigns prev_hunk<cr>",                                 desc = 'Jump to previous hunk' },
-    { 'mgP', "<cmd>Gitsigns preview_hunk<cr>",                              desc = 'Preview hunk' },
-    { 'mgB', "<cmd>Git blame<cr>",                                          desc = 'Blame' },
-    { 'mgf', "<cmd>Git fetch<cr>",                                          desc = 'Fetch' },
-    { 'mgd', "<cmd>Gdiff<cr>",                                              desc = 'Diff' },
-    { 'mgl', "<cmd>Telescope git_commits<cr>",                              desc = 'Log' },
-    { 'mgb', "<cmd>Telescope git_branches<cr>",                             desc = 'Branches' },
-    { 'mgL', "<cmd>Telescope git_bcommits<cr>",                             desc = 'Log of the file' },
-
-    { "mp", "<cmd>Git pull<cr>",                                            desc = "Git Pull" },
-    { "mP", "<cmd>Git push<cr>",                                            desc = "Git Push" },
-    { "md", "<cmd>Trouble diagnostics toggle<cr>",                          desc = "Diagnostics" },
-    { "mj", "<cmd>%!python3.12 -m json.tool<cr>",                           desc = "Pretty JSON" },
-    { "mi", "<cmd>Telescope lsp_implementations<cr>",                       desc = "Implementation" },
-    { "mf", '<cmd>exec "lua vim.lsp.buf.format()"<cr>',                     desc = 'Format the file' },
-    { "mF", "<cmd>NvimTreeFindFile<cr>",                                    desc = "Open the current file in Tree" },
-    { "ms", "<cmd>call CloseSidewins() | execute 'Git' | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways<cr>", desc = 'Git status' },
-    { 'mS', '<cmd>call CloseSidewins() | call OpenTODO()<cr>',              desc = 'Sketch Book' },
-    { 'mr', '<cmd>exec "lua vim.lsp.buf.rename()"<cr>',                     desc = 'Rename' },
-    { 'mt', '<cmd>!yarn prettier:fix<cr>',                                  desc = 'Prettier Fix' },
-    { 'mw', '<cmd>setlocal wrap linebreak<cr>',                             desc = 'Wrap text in window' },
+    -- heading = {
+        -- enabled = true,
+        -- width = 'block',
+    -- },
+    file_types = { "markdown", "Avante" },
+    -- code = {
+        -- style = 'normal'
+    -- },
 }
 require'dressing'.setup{}
---- require("menu").open(options, opts)
---require'avante'.setup{
---  ---@alias Provider "openai" | "claude" | "azure"  | "copilot" | "cohere" | [string]
---  windows = {
---    wrap = true, -- similar to vim.o.wrap
---    width = 30, -- default % based on available width
---    sidebar_header = {
---      align = "right", -- left, center, right for title
---      rounded = false,
---    },
---  },
---}
+require'avante'.setup{
+  provider = "ollama",
+  ollama = {
+    model = "qwen2.5-coder:7b",
+  },
+  windows = {
+    wrap = true, -- similar to vim.o.wrap
+    width = 30, -- default % based on available width
+    sidebar_header = {
+      align = "right", -- left, center, right for title
+      rounded = false,
+    },
+  },
+}
 EOF
 " }}}
 
@@ -305,8 +262,8 @@ let g:lightline.mode_map = {
   \ 't': ' T ',
   \ }
 " Python Provider:
-let g:python_host_prog  = '/opt/homebrew/bin/python3'
-let g:python3_host_prog = '/opt/homebrew/bin/python3'
+let g:python_host_prog  = '/usr/bin/python3'
+let g:python3_host_prog = '/usr/bin/python3'
 " }}}
 
 
@@ -331,7 +288,7 @@ autocmd VimEnter * silent cd %:p:h
 autocmd BufWritePre * %s/\s\+$//e
 " Use tabs or spaces for different filetypes
 autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
-autocmd FileType javascript,typescript setlocal shiftwidth=2 tabstop=2 et
+autocmd FileType javascript,typescript,vim setlocal shiftwidth=2 tabstop=2 et
 " Remove signcolunm from certain filetypes
 " autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug,markdown setlocal signcolumn=no nonumber wrap linebreak
 autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug setlocal signcolumn=no nonumber wrap linebreak
@@ -373,11 +330,9 @@ map <C-g> <cmd>Telescope symbols<CR>
 " Which-key menu
 " nnoremap <silent><nowait> m <cmd>WhichKey! g:which_key_map<CR>
 " Move to word in file
-map f <Plug>(easymotion-bd-W)
 nnoremap <silent><nowait> <F1> <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent><nowait> <F2> <cmd>Telescope lsp_definitions<CR>
 nnoremap <silent><nowait> <F3> <cmd>Telescope lsp_references<CR>
-" nnoremap <silent><nowait> <F4> :Telescope lsp_code_actions<CR>
 nnoremap <silent><nowait> <F4> <cmd>lua vim.lsp.buf.code_action()<CR>
 map j gj
 map k gk
@@ -407,10 +362,6 @@ map <silent> ` :call OpenTODO()<CR>
 map <C-LeftMouse> <Nop>
 vnoremap * y/\V<C-R>=escape(@",'/\')<CR><CR>
 nnoremap <silent> <A-D> :call CloseBuffer()<CR>
-
-" nnoremap mt <cmd>Git push<CR>
-" nnoremap mP <cmd>Git push<CR>
-" nnoremap mp <cmd>Git pull<CR>
 " }}}
 
 
@@ -660,52 +611,4 @@ if (exists('g:lightline'))
   let g:lightline#colorscheme#material_vim#palette = lightline#colorscheme#fill(s:palette)
 endif
 "}}}
-
-" Mouse support
-set mouse=a
-" set ttymouse=sgr
-" set balloonevalterm
-" Styled and colored underline support
-let &t_AU = "\e[58:5:%dm"
-let &t_8u = "\e[58:2:%lu:%lu:%lum"
-let &t_Us = "\e[4:2m"
-let &t_Cs = "\e[4:3m"
-let &t_ds = "\e[4:4m"
-let &t_Ds = "\e[4:5m"
-let &t_Ce = "\e[4:0m"
-" Strikethrough
-let &t_Ts = "\e[9m"
-let &t_Te = "\e[29m"
-" Truecolor support
-let &t_8f = "\e[38:2:%lu:%lu:%lum"
-let &t_8b = "\e[48:2:%lu:%lu:%lum"
-let &t_RF = "\e]10;?\e\\"
-let &t_RB = "\e]11;?\e\\"
-" Bracketed paste
-let &t_BE = "\e[?2004h"
-let &t_BD = "\e[?2004l"
-let &t_PS = "\e[200~"
-let &t_PE = "\e[201~"
-" Cursor control
-let &t_RC = "\e[?12$p"
-let &t_SH = "\e[%d q"
-let &t_RS = "\eP$q q\e\\"
-let &t_SI = "\e[5 q"
-let &t_SR = "\e[3 q"
-let &t_EI = "\e[1 q"
-let &t_VS = "\e[?12l"
-" Focus tracking
-let &t_fe = "\e[?1004h"
-let &t_fd = "\e[?1004l"
-" execute "set <FocusGained>=\<Esc>[I"
-" execute "set <FocusLost>=\<Esc>[O"
-" Window title
-let &t_ST = "\e[22;2t"
-let &t_RT = "\e[23;2t"
-
-" vim hardcodes background color erase even if the terminfo file does
-" not contain bce. This causes incorrect background rendering when
-" using a color theme with a background color in terminals such as
-" kitty that do not support background color erase.
-let &t_ut=''
 " vim:foldmethod=marker:foldlevel=0

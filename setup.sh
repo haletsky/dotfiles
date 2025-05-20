@@ -1,6 +1,7 @@
 #! /bin/bash
 
 mkdir -p ~/.config/kitty
+mkdir -p ~/.config/nvim
 mkdir -p ~/.vim/wiki
 mkdir -p ~/.vim/dict
 mkdir -p ~/.vim/undo

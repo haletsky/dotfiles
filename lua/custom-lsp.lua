@@ -117,7 +117,8 @@ cmp.setup.cmdline({ '/', '?' }, {
 -- Use a loop to conveniently both setup defined servers
 -- and map buffer local keybindings when the language server attaches
 local nvim_lsp = require('lspconfig')
-local servers = { 'clangd', 'jsonls', 'ts_ls', 'gopls', 'bashls', 'terraformls', 'yamlls', 'jdtls', 'lua_ls', 'csharp_ls' }
+local servers = { 'clangd', 'jsonls', 'ts_ls', 'gopls', 'bashls', 'terraformls',
+                    'yamlls', 'jdtls', 'lua_ls', 'csharp_ls', 'pylsp' }
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
         on_attach = lsp_on_attach,
