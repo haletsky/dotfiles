@@ -9,7 +9,6 @@ Plug 'haletsky/rasmus.nvim'
 Plug 'akinsho/nvim-bufferline.lua'
 Plug 'docunext/closetag.vim'
 Plug 'dstein64/nvim-scrollview', { 'branch': 'main' }
-" Plug 'easymotion/vim-easymotion'
 Plug 'folke/trouble.nvim'
 " Plug 'hashivim/vim-terraform'
 Plug 'hrsh7th/cmp-buffer'
@@ -23,20 +22,16 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'petertriho/cmp-git'
 Plug 'itchyny/lightline.vim'
-" Plug 'jparise/vim-graphql'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'kyazdani42/nvim-web-devicons'
 " Plug 'leafgarland/typescript-vim'
 Plug 'lewis6991/gitsigns.nvim'
-" Plug 'liuchengxu/vim-which-key'
 Plug 'nvim-telescope/telescope-media-files.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'onsails/lspkind.nvim'
-" Plug 'plasticboy/vim-markdown'
 Plug 'raimondi/delimitmate'
 Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
-" Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
@@ -48,72 +43,104 @@ Plug 'nvchad/menu'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
 Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 Plug 'folke/which-key.nvim'
+Plug 'folke/neodev.nvim'
 call plug#end()
 " }}}
 
 
 " BASE SETTINGS: {{{
-if (has('nvim'))
+" ─────────────────────────────────────────────────────────────────────────────
+" Enable True Color and basic colorscheme
+" ─────────────────────────────────────────────────────────────────────────────
+if has('nvim')
+  " Make sure true color works in the terminal
+  set termguicolors
   let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 endif
 
+" Turn on syntax highlighting and set colorscheme
 syntax on
-try
-  colorscheme rasmus
-catch
-endtry
-set autoread
-set background=dark
-set clipboard+=unnamedplus
-set completeopt=menuone,noselect
-set conceallevel=2
-set cursorline
-set encoding=utf8
+colorscheme rasmus         " Remove try/catch if you know this scheme always exists
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Basic editor options
+" ─────────────────────────────────────────────────────────────────────────────
+set background=dark        " Use dark theme
+set clipboard+=unnamedplus " Use system clipboard
+set mouse=a                " Enable mouse in all modes
+set number                 " Show line numbers
+set nocursorline           " Do not highlight current line
+set signcolumn=yes         " Always show sign column (for lint/Git signs, etc.)
 set fillchars=eob:\ ,vert:\│
-set foldenable
-set foldlevelstart=10
-set foldmethod=syntax
-set foldnestmax=10
-set hidden
-set ignorecase
-set langmenu=en
-set laststatus=3
-set list listchars=tab:\ \ ,trail:⎵,precedes:<,extends:>
-set makeprg=make
-set mouse=a
-set nobackup
-set nocompatible
-set noshowcmd
-set noshowmode
-set noswapfile
-set nowrap
-set nowritebackup
-set number
-set sessionoptions-=blank
-set shortmess+=F
-set shortmess+=c
-set signcolumn=yes
-set smarttab shiftwidth=4 tabstop=4 expandtab
+                          " Remove ~ after EOF and set vertical line char
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Search and completion settings
+" ─────────────────────────────────────────────────────────────────────────────
+set ignorecase          " Case-insensitive search
+set wildmenu            " Enhanced command-line completion
+set wildignore+=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
+                        " Files/folders to ignore in filename completion
+
+set completeopt=menuone,noselect
+                        " Better completion behavior (e.g., for nvim-cmp)
+set shortmess+=Fc       " Avoid certain messages (F = file info, c = completion messages)
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Folding
+" ─────────────────────────────────────────────────────────────────────────────
+set foldenable             " Enable code folding
+set foldmethod=syntax      " Fold based on syntax
+set foldnestmax=10         " Maximum fold nesting
+set foldlevelstart=10      " Start with folds open up to level 10
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Editing and undo
+" ─────────────────────────────────────────────────────────────────────────────
+set hidden            " Allow switching buffers without saving
 set undodir=~/.vim/undo
-set undofile
-set updatetime=500
-set wildignore=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
-set wildmenu
-silent set is hl
-filetype plugin on
-filetype indent on
-if !has('gui_running')
-  set t_Co=256
-endif
-if (has("termguicolors"))
-  set termguicolors
-endif
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
+set undofile          " Persistent undo
+set updatetime=500    " Faster CursorHold and autoread
+set autoread          " Auto-reload file if changed outside
+
+set smarttab shiftwidth=4 tabstop=4 expandtab
+                      " Use spaces instead of tabs; each indent = 4 spaces
+
+set nowrap            " Don’t wrap long lines
+set conceallevel=2    " Hide some markup (e.g., in Markdown)
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Session and statusline
+" ─────────────────────────────────────────────────────────────────────────────
+set laststatus=3           " Global statusline at the bottom
+set sessionoptions-=blank  " Don’t save empty windows in sessions
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Netrw (built-in file explorer) settings
+" ─────────────────────────────────────────────────────────────────────────────
+let g:netrw_banner   = 0    " Disable banner
+let g:netrw_liststyle = 3   " Tree-style listing
 let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-let g:netrw_winsize = 25
-let &shell='/bin/zsh'
+let g:netrw_altv    = 1     " Open splits to the left
+let g:netrw_winsize = 25    " Explorer window width
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Miscellaneous tweaks
+" ─────────────────────────────────────────────────────────────────────────────
+set noswapfile       " Don’t create swap files
+set nobackup         " Don’t create backup files
+set nowritebackup    " Don’t create writebackup files
+set makeprg=make     " Use ‘make’ for :make
+set shell=/bin/zsh   " Use zsh as shell
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Filetype, plugin and indent detection
+" ─────────────────────────────────────────────────────────────────────────────
+filetype plugin indent on
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Disable unused providers to speed up startup
+" ─────────────────────────────────────────────────────────────────────────────
 let g:loaded_perl_provider = 0
 let g:loaded_node_provider = 0
 let g:loaded_ruby_provider = 0
@@ -122,54 +149,44 @@ let g:loaded_ruby_provider = 0
 
 " LOAD LUA CONFIG: {{{
 lua << EOF
+require'neodev'.setup{}
+require'dressing'.setup{}
+
+local mapnormalmode = { i = { ["<C-j>"] = { "<esc>", type = "command" } } }
 require'telescope'.setup{
   pickers = {
+    live_grep = {
+      mappings = mapnormalmode,
+    },
+    git_files = {
+      mappings = mapnormalmode,
+    },
+    grep_string = {
+      mappings = mapnormalmode,
+    },
     find_files = {
-      mappings = {
-        i = {
-          ["<C-j>"] = { "<esc>", type = "command" },
-        },
-      },
+      hidden = true,
+      mappings = mapnormalmode,
     },
   },
 }
 require'telescope'.load_extension'media_files'
+
 require'gitsigns'.setup{
   numhl      = true,
   current_line_blame = true,
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+  }
 }
-require'trouble'.setup{
-  use_diagnostic_signs = true -- enabling this will use the signs defined in your lsp client
-}
+require'trouble'.setup{}
 require'custom-lsp'
 require'custom-bufferline'
 require'custom-nvim-tree'
 require'custom-which-key'
-require'render-markdown'.setup{
-    -- heading = {
-        -- enabled = true,
-        -- width = 'block',
-    -- },
-    file_types = { "markdown", "Avante" },
-    -- code = {
-        -- style = 'normal'
-    -- },
-}
-require'dressing'.setup{}
-require'avante'.setup{
-  provider = "ollama",
-  ollama = {
-    model = "qwen2.5-coder:7b",
-  },
-  windows = {
-    wrap = true, -- similar to vim.o.wrap
-    width = 30, -- default % based on available width
-    sidebar_header = {
-      align = "right", -- left, center, right for title
-      rounded = false,
-    },
-  },
-}
+require'custom-avante'
+require'custom-markdown'
 EOF
 " }}}
 
@@ -180,38 +197,6 @@ let g:scrollview_always_show = 1
 " VimWiki:
 let g:vimwiki_ext2syntax = {}
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
-" WhichKey:
-" let g:which_key_use_floating_win = 0
-" let g:which_key_sort_horizontal = 0
-" let g:which_key_map = {
-"   \ 'name': 'menu',
-"   \ 'P': [':Git push', 'Git push'],
-"   \ 'd': [':Trouble', 'Diagnostics'],
-"   \ 'c': [':lua vim.lsp.buf.code_action()', 'Code Action'],
-"   \ 'j': [':%!python3.12 -m json.tool', 'Pretty json'],
-"   \ 'p': [':Git pull', 'Git pull'],
-"   \ 'i': [':Telescope lsp_implementations', 'Implementation'],
-"   \ 'f': [':exec "lua vim.lsp.buf.format()"', 'Format a file'],
-"   \ 'F': [':NvimTreeFindFile', 'Open current File in Tree'],
-"   \ 's': [':call CloseSidewins() | execute "Git" | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways', 'Git status'],
-"   \ 'S': [':call CloseSidewins() | call OpenTODO()', 'Sketch Book'],
-"   \ 'r': [':exec "lua vim.lsp.buf.rename()"', 'Rename'],
-"   \ 't': [':!yarn prettier:fix', 'Run prettier:fix'],
-"   \ 'w': [':setlocal wrap linebreak', 'Wrap text in window']
-"   \ }
-" " let g:which_key_map['m'] = { 'name': '+tasks-menu' }
-" let g:which_key_map['g'] = {
-"   \ 'name': '+git-menu',
-"   \ 'n': [':exec "lua require(\"gitsigns\").next_hunk({ preview = true })"', 'Jump to next hunk'],
-"   \ 'p': [':Gitsigns prev_hunk', 'Jump to previous hunk'],
-"   \ 'P': [':Gitsigns preview_hunk', 'Preview hunk'],
-"   \ 'B': [':Git blame', 'Blame'],
-"   \ 'f': [':Git fetch', 'Fetch'],
-"   \ 'd': [':Gdiff', 'Diff'],
-"   \ 'l': [':Telescope git_commits', 'Log'],
-"   \ 'b': [':Telescope git_branches', 'Branches'],
-"   \ 'L': [':Telescope git_bcommits', 'Log of the file']
-"   \ }
 " NERD Commenter:
 let g:NERDDefaultAlign = "left"
 let g:NERDSpaceDelims = 1
@@ -268,100 +253,203 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 
 " HIGHLIGHTS: {{{
+" Give the message area a custom background
 highlight MsgArea guibg=#1a1a19
-augroup highlight_yank
-    autocmd!
-    au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=300 }
+
+" Temporarily highlight text on yank
+augroup YankHighlight
+  " clear existing autocmds in this group
+  autocmd!
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank { higroup = 'IncSearch', timeout = 300 }
 augroup END
+
+" Make NonText characters (e.g. trailing ~) blend into the background
 highlight NonText guifg=bg
-augroup BgHighlight
-    autocmd!
-    autocmd WinEnter * set cul
-    autocmd WinLeave * set nocul
-augroup END
+
+" Toggle cursorline only in the focused window
+" augroup CursorLineToggle
+  " clear existing autocmds in this group
+  " autocmd!
+  " autocmd WinEnter * setlocal cursorline
+  " autocmd WinLeave * setlocal nocursorline
+" augroup END
 " }}}
 
 
 " AUTOCMDS: {{{
-autocmd VimEnter * silent cd %:p:h
-" Remove traling spaces after save
-autocmd BufWritePre * %s/\s\+$//e
-" Use tabs or spaces for different filetypes
-autocmd FileType go setlocal shiftwidth=4 tabstop=4 noet
-autocmd FileType javascript,typescript,vim setlocal shiftwidth=2 tabstop=2 et
-" Remove signcolunm from certain filetypes
-" autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug,markdown setlocal signcolumn=no nonumber wrap linebreak
-autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug setlocal signcolumn=no nonumber wrap linebreak
-autocmd TermOpen * setlocal signcolumn=no
-" Move cursor to last edited line when open file
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-" Which-key
-" autocmd VimEnter * silent call InitializeProjectTasks()
-" autocmd! FileType which_key
-" autocmd  FileType which_key set laststatus=3
-"   \| autocmd BufLeave <buffer> set laststatus=3
-autocmd TermOpen * setlocal nonumber
+" On Vim startup, cd to the directory of the opened file
+augroup AutoChdir
+  autocmd!
+  autocmd VimEnter * silent! lcd %:p:h
+augroup END
+
+" Strip trailing whitespace on save
+augroup TrimWhitespace
+  autocmd!
+  autocmd BufWritePre * %s/\s\+$//e
+augroup END
+
+" Indentation rules by filetype
+augroup FiletypeIndent
+  autocmd!
+  " Go: use tabs (4 spaces per tab)
+  autocmd FileType go,lua setlocal shiftwidth=4 tabstop=4 noexpandtab
+
+  " JS/TS/Vimscript: use 2-space (spaces instead of tabs)
+  autocmd FileType javascript,typescript,vim setlocal shiftwidth=2 tabstop=2 expandtab
+augroup END
+
+" Disable signcolumn and number for certain filetypes
+augroup FiletypeDisplay
+  autocmd!
+  autocmd FileType fugitive,gitcommit,help,vimwiki,vim-plug
+        \ setlocal signcolumn=no nonumber wrap linebreak
+
+  " In terminal buffers, hide the signcolumn and line numbers
+  autocmd TermOpen * setlocal signcolumn=no nonumber
+augroup END
+
+" Restore cursor to last edit position on file open
+augroup LastCursor
+  autocmd!
+  autocmd BufReadPost *
+        \ if line("'\"") > 1 && line("'\"") <= line("$") |
+        \   exe "normal! g'\"" |
+        \ endif
+augroup END
 " }}}
 
 
 " HOTKEYS: {{{
-" inoremap <Tab> <C-R>=SmartTab()<CR>
-" Map NvimTreeToggle on Control-b
-map <silent> <C-b> :call CloseSidewinsButNoNvimTree()<CR>
-imap <silent> <C-b> <C-O> :call CloseSidewinsButNoNvimTree()<CR>
-" Tab movement
-noremap <A-l> :BufferLineCycleNext<CR>
-noremap <A-h> :BufferLineCyclePrev<CR>
-nnoremap ( :tabp<CR>
-nnoremap ) :tabn<CR>
-" Siwtch to NORMAL mode with jj or C-j
-imap jj <Esc>
-imap <C-j> <C-\><C-n>
-vmap <C-j> <C-\><C-n>
-tnoremap <C-j> <C-\><C-n>
-" COMMAND mode by space
-nmap <Space> :
-" Comment code
-map <C-c> <Plug>NERDCommenterToggle
-" Finders
-map <C-f> <cmd>Telescope live_grep<CR>
-map <C-p> <cmd>Telescope find_files find_command=rg,--ignore,--hidden,--files,--glob,!.git<CR>
-map <C-g> <cmd>Telescope symbols<CR>
-" Which-key menu
-" nnoremap <silent><nowait> m <cmd>WhichKey! g:which_key_map<CR>
-" Move to word in file
-nnoremap <silent><nowait> <F1> <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent><nowait> <F2> <cmd>Telescope lsp_definitions<CR>
-nnoremap <silent><nowait> <F3> <cmd>Telescope lsp_references<CR>
-nnoremap <silent><nowait> <F4> <cmd>lua vim.lsp.buf.code_action()<CR>
-map j gj
-map k gk
-map gl $
-map gh 0
-map gi <cmd>Telescope lsp_implementations<CR>
-map gd <cmd>Telescope lsp_definitions<CR>
-map gr <cmd>Telescope lsp_references<CR>
-map gw <cmd>Telescope lsp_dynamic_workspace_symbols<CR>
-nnoremap gn <cmd>Gitsigns next_hunk preview=true<CR>
-nnoremap gp <cmd>Gitsigns prev_hunk preview=true<CR>
-nnoremap gx <cmd>Gitsigns reset_hunk<CR>
-nnoremap gs <cmd>Gitsigns stage_hunk<CR>
-map <C-T> :terminal<CR>
-nnoremap <C-Space> za
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
-vnoremap <A-j> :m '>+1<CR>gv=gv
-vnoremap <A-k> :m '<-2<CR>gv=gv
-map = :resize -4<CR>
-map - :resize +4<CR>
-map + :vertical resize -5<CR>
-map _ :vertical resize +5<CR>
-map <silent> ` :call OpenTODO()<CR>
-map <C-LeftMouse> <Nop>
-vnoremap * y/\V<C-R>=escape(@",'/\')<CR><CR>
+
+" NvimTree: Toggle with Ctrl-b (normal and insert modes)
+nnoremap <silent> <C-b> :call CloseSidewinsButNoNvimTree()<CR>
+inoremap <silent> <C-b> <C-O>:call CloseSidewinsButNoNvimTree()<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Buffer/Tab Navigation
+" ─────────────────────────────────────────────────────────────────────────────
+" Cycle through buffers with Alt-l and Alt-h
+nnoremap <silent> <A-l> :BufferLineCycleNext<CR>
+nnoremap <silent> <A-h> :BufferLineCyclePrev<CR>
+
+" Switch tabs: ( = previous tab, ) = next tab
+nnoremap <silent> ( :tabprevious<CR>
+nnoremap <silent> ) :tabnext<CR>
+
+" Gitsigns: navigate and manipulate hunks
+nnoremap <silent> gn :Gitsigns nav_hunk next preview=true<CR>
+nnoremap <silent> gp :Gitsigns nav_hunk prev preview=true<CR>
+nnoremap <silent> gx :Gitsigns reset_hunk<CR>
+nnoremap <silent> gs :Gitsigns stage_hunk<CR>
+
+" Buffer close
+nnoremap <silent> <A-d> :call CloseBuffer()<CR>
 nnoremap <silent> <A-D> :call CloseBuffer()<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Mode Switching
+" ─────────────────────────────────────────────────────────────────────────────
+" Quickly return to NORMAL from insert/terminal/visual with Ctrl-j or jj
+inoremap <silent> jj    <Esc>
+inoremap <silent> <C-j> <C-\><C-n>
+vnoremap <silent> <C-j> <C-\><C-n>
+tnoremap <silent> <C-j> <C-\><C-n>
+
+" Enter COMMAND mode by pressing Space in normal mode
+nnoremap <Space> :
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Commenting
+" ─────────────────────────────────────────────────────────────────────────────
+" Toggle comments with Ctrl-c (NERDCommenter)
+nnoremap <silent> <C-c> <Plug>NERDCommenterToggle
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Finders (Telescope)
+" ─────────────────────────────────────────────────────────────────────────────
+nnoremap <silent> <C-f>   <cmd>Telescope live_grep<CR>
+nnoremap <silent> <C-g>   <cmd>Telescope grep_string<CR>
+nnoremap <silent> <C-p>   <cmd>Telescope git_files<CR>
+nnoremap <silent> <C-S-P> <cmd>Telescope find_files<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" LSP & Symbols
+" ─────────────────────────────────────────────────────────────────────────────
+" Hover documentation with F1 (bordered if configured in LSP)
+nnoremap <silent> <F1> <cmd>lua vim.lsp.buf.hover({
+      \ border = "rounded",
+      \ silent = true,
+      \ max_width = 80,
+      \ wrap = true,
+      \ })<CR>
+
+" Jump to definition, references, implementations, code actions
+nnoremap <silent> <F2>  <cmd>Telescope lsp_definitions<CR>
+nnoremap <silent> <F3>  <cmd>Telescope lsp_references<CR>
+nnoremap <silent> <F4>  <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> gi    <cmd>Telescope lsp_implementations<CR>
+nnoremap <silent> gd    <cmd>Telescope lsp_definitions<CR>
+nnoremap <silent> gr    <cmd>Telescope lsp_references<CR>
+nnoremap <silent> gw    <cmd>Telescope lsp_dynamic_workspace_symbols<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Word-Wrapped Movement
+" ─────────────────────────────────────────────────────────────────────────────
+" Move by display lines when lines wrap
+nnoremap <silent> j gj
+nnoremap <silent> k gk
+nnoremap <silent> gl $
+nnoremap <silent> gh 0
+nnoremap <silent> dgl d$
+nnoremap <silent> dgh d0
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Terminal
+" ─────────────────────────────────────────────────────────────────────────────
+" Open terminal with Ctrl-T
+nnoremap <silent> <C-T> :terminal<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Window/Pane Resizing
+" ─────────────────────────────────────────────────────────────────────────────
+" Resize height with = (smaller) and - (larger)
+nnoremap <silent> = :resize -4<CR>
+nnoremap <silent> - :resize +4<CR>
+
+" Resize width with + (narrower) and _ (wider)
+nnoremap <silent> + :vertical resize -5<CR>
+nnoremap <silent> _ :vertical resize +5<CR>
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Text Movement (Move lines up/down)
+" ─────────────────────────────────────────────────────────────────────────────
+" Normal mode: Alt-j/k to move current line down/up
+nnoremap <silent> <A-j> :m .+1<CR>==
+nnoremap <silent> <A-k> :m .-2<CR>==
+
+" Insert mode: Alt-j/k to move current line down/up (and re-enter insert)
+inoremap <silent> <A-j> <Esc>:m .+1<CR>==gi
+inoremap <silent> <A-k> <Esc>:m .-2<CR>==gi
+
+" Visual mode: Alt-j/k to move selected block down/up
+vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
+vnoremap <silent> <A-k> :m '<-2<CR>gv=gv
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Other Mappings
+" ─────────────────────────────────────────────────────────────────────────────
+" Disable Ctrl-LeftMouse to prevent accidental clicks
+nnoremap <silent> <C-LeftMouse> <Nop>
+
+" Unfold
+nnoremap <C-Space> za
+
+" Visual: search for selection with *
+vnoremap <silent> * y/\V<C-R>=escape(@",'/\')<CR><CR>
+
+" TODO: Open TODO list with backtick
+nnoremap <silent> ` :call OpenTODO()<CR>
 " }}}
 
 
