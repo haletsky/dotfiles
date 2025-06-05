@@ -363,13 +363,13 @@ nnoremap <Space> :
 " Commenting
 " ─────────────────────────────────────────────────────────────────────────────
 " Toggle comments with Ctrl-c (NERDCommenter)
-nnoremap <silent> <C-c> <Plug>NERDCommenterToggle
+noremap <silent> <C-c> <Plug>NERDCommenterToggle
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Finders (Telescope)
 " ─────────────────────────────────────────────────────────────────────────────
 nnoremap <silent> <C-f>   <cmd>Telescope live_grep<CR>
-nnoremap <silent> <C-g>   <cmd>Telescope grep_string<CR>
+vnoremap <silent> <C-f>   <cmd>Telescope grep_string<CR>
 nnoremap <silent> <C-p>   <cmd>Telescope git_files<CR>
 nnoremap <silent> <C-S-P> <cmd>Telescope find_files<CR>
 
@@ -399,10 +399,8 @@ nnoremap <silent> gw    <cmd>Telescope lsp_dynamic_workspace_symbols<CR>
 " Move by display lines when lines wrap
 nnoremap <silent> j gj
 nnoremap <silent> k gk
-nnoremap <silent> gl $
-nnoremap <silent> gh 0
-nnoremap <silent> dgl d$
-nnoremap <silent> dgh d0
+map <silent> gl $
+map <silent> gh 0
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Terminal
