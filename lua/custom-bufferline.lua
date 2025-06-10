@@ -28,37 +28,47 @@ bufferline.setup({
 		diagnostics = "nvim_lsp",
 		offsets = { {
 			filetype = "NvimTree",
-			text = "File Explorer",
-			highlight = "BufferLineBuffer",
+			text = "󰙅 File Explorer",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		}, {
 			filetype = "fugitive",
-			text = "GIT",
-			highlight = "BufferLineBuffer",
+			text = " Repository",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		}, {
 			filetype = "vimwiki",
-			text = "Sketch Book",
-			highlight = "BufferLineBuffer",
+			text = "  Sketch Book",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		}, {
 			filetype = "fugitiveblame",
-			text = "Git blame",
-			highlight = "BufferLineBuffer",
+			text = " Git blame",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		}, {
 			filetype = "gitcommit",
-			text = "GIT commit",
-			highlight = "BufferLineBuffer",
+			text = " Git commit",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		}, {
 			filetype = "vim-plug",
-			text = "VIM Plug",
-			highlight = "BufferLineBuffer",
+			text = "󰏔 Vim Plug",
+			highlight = "BufferLineTitle",
+			text_align = "center",
+		}, {
+			filetype = "Avante",
+			text = "󰭹 Avante",
+			highlight = "BufferLineTitle",
+			text_align = "center",
+		}, {
+			filetype = "AvanteInput",
+			text = "󰭹 Avante",
+			highlight = "BufferLineTitle",
 			text_align = "center",
 		} },
 		custom_filter = function(buf, _)
-			local arr = { 'vimwiki', 'fugitive', 'fugitiveblame', 'gitcommit', 'NvimTree' }
+			local arr = { 'vimwiki', 'fugitive', 'fugitiveblame', 'gitcommit', 'NvimTree', 'Avante' }
 			for _, value in pairs(arr) do
 				if vim.bo[buf].filetype == value then
 					return false

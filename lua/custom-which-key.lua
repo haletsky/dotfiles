@@ -18,6 +18,7 @@ wk.add {
 	{ 'mgb', "<cmd>Telescope git_branches<cr>",                                                                                                    desc = 'Branches' },
 	{ 'mgL', "<cmd>Telescope git_bcommits<cr>",                                                                                                    desc = 'Log of the file' },
 
+	{ "ma",  "<cmd>call CloseSidewins() | execute 'AvanteFocus' | vertical resize 45<cr>",                                                         desc = "Avante" },
 	{ "mp",  "<cmd>Git pull<cr>",                                                                                                                  desc = "Git Pull" },
 	{ "mP",  "<cmd>Git push<cr>",                                                                                                                  desc = "Git Push" },
 	{ "md",  "<cmd>Trouble diagnostics toggle<cr>",                                                                                                desc = "Diagnostics" },
@@ -25,7 +26,7 @@ wk.add {
 	{ "mi",  "<cmd>Telescope lsp_implementations<cr>",                                                                                             desc = "Implementation" },
 	{ "mf",  '<cmd>exec "lua vim.lsp.buf.format()"<cr>',                                                                                           desc = 'Format the file' },
 	{ "mF",  "<cmd>NvimTreeFindFile<cr>",                                                                                                          desc = "Open the current file in Tree" },
-	{ "ms",  "<cmd>call CloseSidewins() | execute 'Git' | wincmd H | vertical resize 40 | setlocal winhl=Normal:NvimTreeNormal noequalalways<cr>", desc = 'Git status' },
+	{ "ms",  "<cmd>call CloseSidewins() | execute 'Git' | wincmd H | vertical resize 45 | setlocal winhl=Normal:NvimTreeNormal noequalalways<cr>", desc = 'Git status' },
 	{ 'mS',  '<cmd>call CloseSidewins() | call OpenTODO()<cr>',                                                                                    desc = 'Sketch Book' },
 	{ 'mr',  '<cmd>exec "lua vim.lsp.buf.rename()"<cr>',                                                                                           desc = 'Rename' },
 	{ 'mt',  '<cmd>!yarn prettier:fix<cr>',                                                                                                        desc = 'Prettier Fix' },

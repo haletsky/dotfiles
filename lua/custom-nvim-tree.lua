@@ -11,9 +11,10 @@ nvimtree.setup({
 		api.config.mappings.default_on_attach(bufnr)
 
 		-- custom mappings
-		-- vim.keymap.set('n', 'm', function()
-		--     vim.cmd('WhichKey! g:which_key_map')
-		-- end, opts('WhichKey'))
+		local function opts(desc)
+			return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+		end
+		vim.keymap.del('n', 'm', opts('WhichKey'))
 	end,
 	git = {
 		timeout = 2000,
@@ -28,7 +29,7 @@ nvimtree.setup({
 		},
 	},
 	view = {
-		width = 40,
+		width = 45,
 	},
 	prefer_startup_root = true,
 	hijack_unnamed_buffer_when_opening = true,

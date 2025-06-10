@@ -5,11 +5,16 @@ require 'avante'.setup {
 		model = "devstral",
 	},
 	windows = {
-		wrap = true,         -- similar to vim.o.wrap
-		width = 30,          -- default % based on available width
+		wrap = true, -- similar to vim.o.wrap
+		-- width = 30, -- default % based on available width
+		position = "left",
 		sidebar_header = {
-			align = "right", -- left, center, right for title
-			rounded = false,
+			enabled = false,
+			-- align = "center", -- left, center, right for title
+			-- rounded = false,
+		},
+		ask = {
+			start_insert = false, -- Start insert mode when opening the ask window
 		},
 	},
 }

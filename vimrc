@@ -71,7 +71,7 @@ set mouse=a                " Enable mouse in all modes
 set number                 " Show line numbers
 set nocursorline           " Do not highlight current line
 set signcolumn=yes         " Always show sign column (for lint/Git signs, etc.)
-set fillchars=eob:\ ,vert:\│
+set fillchars=eob:\ ,
                           " Remove ~ after EOF and set vertical line char
 
 " ─────────────────────────────────────────────────────────────────────────────
@@ -154,6 +154,9 @@ require'dressing'.setup{}
 
 local mapnormalmode = { i = { ["<C-j>"] = { "<esc>", type = "command" } } }
 require'telescope'.setup{
+  defaults = {
+    prompt_prefix = " 󰞷 ",
+  },
   pickers = {
     live_grep = {
       mappings = mapnormalmode,
@@ -192,8 +195,8 @@ EOF
 
 
 " PLUGIN CONFIGURATION: {{{
-let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit', 'vimwiki', 'fugitive']
-let g:scrollview_always_show = 1
+let g:scrollview_excluded_filetypes = ['NvimTree', 'gitcommit', 'vimwiki', 'fugitive', 'Avante', 'AvanteInput', 'AvanteSelectedFiles']
+" let g:scrollview_always_show = 1
 " VimWiki:
 let g:vimwiki_ext2syntax = {}
 let g:vimwiki_list = [{'path': '~/.vim/wiki'}]
@@ -203,7 +206,7 @@ let g:NERDSpaceDelims = 1
 " NvimTree:
 let g:nvim_tree_group_empty = 1
 let g:nvim_tree_add_trailing = 1
-let g:nvim_tree_width = 40
+let g:nvim_tree_width = 45
 let g:nvim_tree_indent_markers = 1
 let g:nvim_tree_disable_window_picker = 1
 let g:nvim_tree_icons = { 'default': '' }
@@ -254,7 +257,9 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 " HIGHLIGHTS: {{{
 " Give the message area a custom background
-highlight MsgArea guibg=#1a1a19
+" highlight MsgArea guibg=#1a1a19
+
+highlight BufferLineTitle guibg=#1a1a19
 
 " Temporarily highlight text on yank
 augroup YankHighlight
@@ -263,16 +268,13 @@ augroup YankHighlight
   autocmd TextYankPost * silent! lua vim.highlight.on_yank { higroup = 'IncSearch', timeout = 300 }
 augroup END
 
-" Make NonText characters (e.g. trailing ~) blend into the background
-highlight NonText guifg=bg
-
 " Toggle cursorline only in the focused window
-" augroup CursorLineToggle
+augroup CursorLineToggle
   " clear existing autocmds in this group
-  " autocmd!
-  " autocmd WinEnter * setlocal cursorline
-  " autocmd WinLeave * setlocal nocursorline
-" augroup END
+  autocmd!
+  autocmd WinEnter * setlocal cursorline
+  autocmd WinLeave * setlocal nocursorline
+augroup END
 " }}}
 
 
@@ -324,7 +326,7 @@ augroup END
 
 " NvimTree: Toggle with Ctrl-b (normal and insert modes)
 nnoremap <silent> <C-b> :call CloseSidewinsButNoNvimTree()<CR>
-inoremap <silent> <C-b> <C-O>:call CloseSidewinsButNoNvimTree()<CR>
+inoremap <silent> <C-b> <C-O>:call CloseSidewinsButFocusNvimTree()<CR><Esc>
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Buffer/Tab Navigation
@@ -462,6 +464,7 @@ function! CloseSidewins()
   silent! bd */.git//
   silent! bd */index.wiki
   silent! bd *.wiki
+  lua require('avante').close_sidebar()
   lua require 'nvim-tree.api'.tree.close()
 endfunction
 
@@ -470,7 +473,17 @@ function! CloseSidewinsButNoNvimTree()
   silent! bd */index.wiki
   silent! bd *.wiki
   set equalalways
+  lua require('avante').close_sidebar()
   lua require 'nvim-tree.api'.tree.toggle()
+endfunction
+
+function! CloseSidewinsButFocusNvimTree()
+  silent! bd */.git//
+  silent! bd */index.wiki
+  silent! bd *.wiki
+  set equalalways
+  lua require('avante').close_sidebar()
+  lua require 'nvim-tree.api'.tree.focus()
 endfunction
 
 function! SmartTab()
@@ -520,7 +533,7 @@ function! OpenTODO()
   vsplit
   execute 'VimwikiIndex'
   wincmd H
-  vertical resize 40
+  vertical resize 45
   set winhl=Normal:NvimTreeNormal
   set wrap
   set signcolumn=no
