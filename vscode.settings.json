@@ -1,0 +1,75 @@
+{
+  "editor.lineNumbers": "on",
+  "editor.renderLineHighlight": "none",
+  "editor.wordWrap": "off",
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "files.autoSave": "off",
+  "search.useIgnoreFiles": true,
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.editor.enablePreview": false,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "[go]":       { "editor.tabSize": 4, "editor.insertSpaces": false },
+  "[lua]":      { "editor.tabSize": 4, "editor.insertSpaces": false },
+  "[javascript]": { "editor.tabSize": 2, "editor.insertSpaces": true },
+  "[typescript]": { "editor.tabSize": 2, "editor.insertSpaces": true },
+  "[viml]":     { "editor.tabSize": 2, "editor.insertSpaces": true },
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.handleKeys": {
+    "<C-b>": false,
+    "<C-p>": false,
+    "<C-S-p>": false,
+    "<C-f>": false,
+    "<C-t>": false,
+    "<C-Space>": false
+  },
+  "vim.leader": "\\",
+  "vim.insertModeKeyBindings": [
+    { "before": ["j","j"], "after": ["<Esc>"] },
+    { "before": ["<C-j>"], "after": ["<Esc>"] }
+  ],
+  "vim.visualModeKeyBindings": [
+    { "before": ["<C-j>"], "after": ["<Esc>"] }
+  ],
+  "vim.terminalModeKeyBindings": [
+    { "before": ["<C-j>"], "after": ["<C-\\>", "<C-n>"] }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": ["<M-l>"], "commands": ["workbench.action.nextEditor"] },
+    { "before": ["<M-h>"], "commands": ["workbench.action.previousEditor"] },
+    { "before": ["<Esc>", "l"], "commands": ["workbench.action.nextEditor"] },
+    { "before": ["<Esc>", "h"], "commands": ["workbench.action.previousEditor"] },
+    { "before": ["("], "commands": ["workbench.action.previousEditorInGroup"] },
+    { "before": [")"], "commands": ["workbench.action.nextEditorInGroup"] },
+    { "before": ["<M-d>"], "commands": ["workbench.action.closeActiveEditor"] },
+    { "before": ["<Space>"], "commands": ["workbench.action.showCommands"] },
+    { "before": ["<C-c>"], "commands": ["editor.action.commentLine"] },
+    { "before": ["<C-p>"],   "commands": ["workbench.action.quickOpen"] },
+    { "before": ["<C-S-p>"], "commands": ["workbench.action.showCommands"] },
+    { "before": ["<C-f>"],   "commands": ["workbench.action.findInFiles"] },
+    { "before": ["<F1>"], "commands": ["editor.action.showHover"] },
+    { "before": ["<F2>"], "commands": ["editor.action.revealDefinition"] },
+    { "before": ["<F3>"], "commands": ["editor.action.referenceSearch.trigger"] },
+    { "before": ["<F4>"], "commands": ["editor.action.quickFix"] },
+    { "before": ["g","d"],  "commands": ["editor.action.revealDefinition"] },
+    { "before": ["g","i"],  "commands": ["editor.action.goToImplementation"] },
+    { "before": ["g","r"],  "commands": ["editor.action.referenceSearch.trigger"] },
+    { "before": ["g","w"],  "commands": ["workbench.action.findInFiles"] },
+    { "before": ["<C-t>"], "commands": ["workbench.action.terminal.toggleTerminal"] },
+    { "before": ["g","l"], "after": ["$"] },
+    { "before": ["g","h"], "after": ["0"] },
+    { "before": ["<C-Space>"], "commands": ["editor.toggleFold"] },
+    { "before": ["g","n"], "commands": ["workbench.action.editor.nextChange"] },
+    { "before": ["g","p"], "commands": ["workbench.action.editor.previousChange"] },
+    { "before": ["g","s"], "commands": ["git.stageSelectedRanges"] },
+    { "before": ["g","x"], "commands": ["git.revertSelectedRanges"] }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": ["<C-c>"], "commands": ["editor.action.commentLine"] },
+    { "before": ["<C-f>"], "commands": ["workbench.action.findInFiles"] }
+  ]
+}

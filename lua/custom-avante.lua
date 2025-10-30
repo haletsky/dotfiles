@@ -1,8 +1,10 @@
 require 'avante'.setup {
 	provider = "ollama",
-	ollama = {
-		endpoint = "http://192.168.0.83:11434",
-		model = "devstral",
+	providers = {
+		ollama = {
+			endpoint = "http://192.168.0.83:11434",
+			model = "qwen3-coder:30b-a3b-q4_K_M",
+		},
 	},
 	windows = {
 		wrap = true, -- similar to vim.o.wrap
