@@ -1,5 +1,5 @@
-"
-" Install Vim-Plug (https://github.com/junegunn/vim-plug?tab=readme-ov-file#neovim)
+" ─────────────────────────────────────────────────────────────────────────────
+" Vim-Plug (https://github.com/junegunn/vim-plug?tab=readme-ov-file#neovim)
 "
 " Unix:
 " $ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
@@ -8,6 +8,8 @@
 " $ iwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim |`
 "   ni "$(@($env:XDG_DATA_HOME, $env:LOCALAPPDATA)[$null -eq $env:XDG_DATA_HOME])/nvim-data/site/autoload/plug.vim" -Force
 "
+"  https://github.com/junegunn/vim-plug#neovim
+" ─────────────────────────────────────────────────────────────────────────────
 call plug#begin()
 
 Plug 'haletsky/rasmus.nvim'
@@ -17,96 +19,122 @@ Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
-
-" Truecolor + syntax
+" ─────────────────────────────────────────────────────────────────────────────
+"  UI & basics
+" ─────────────────────────────────────────────────────────────────────────────
 if has('termguicolors') | set termguicolors | endif
 syntax on
 set background=dark
 colorscheme rasmus
 
-" Basics
-set ttimeout
-set ttimeoutlen=10
-set clipboard+=unnamedplus
-set mouse=a
 set number
-set nocursorline
 set signcolumn=yes
+set nocursorline
 set fillchars=eob:\ ,
+set laststatus=3
+set cmdheight=1
+
+set mouse=a
+set clipboard+=unnamedplus
+
 set ignorecase
+set smartcase                          " case-sensitive if pattern has capitals
+set incsearch
 set wildmenu
+set wildmode=longest:full,full
 set wildignore+=*.pyc,.git,.hg,.svn,*.jpeg,*.jpg,*.png,*.svg,node_modules,.next,build
-set completeopt=menuone,noselect
-set shortmess+=Fc
-set foldenable foldnestmax=10 foldlevelstart=10
-set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
+set completeopt=menuone,noselect,noinsert
+set shortmess+=Ic                       " no intro, quieter completion
+set updatetime=300
+set scrolloff=3 sidescrolloff=3
+set splitbelow splitright
+
+" Files, backups, undo
 set hidden
-set undodir=~/.vim/undo | set undofile
-set updatetime=500
-set autoread
+set noswapfile nobackup nowritebackup
+silent! call mkdir(has('nvim') ? stdpath('state').'/undo' : expand('~/.vim/undo'), 'p')
+let &undodir = has('nvim') ? stdpath('state').'/undo' : expand('~/.vim/undo')
+set undofile
+
+" Indentation & wrapping
 set smarttab shiftwidth=4 tabstop=4 expandtab
 set nowrap
 set conceallevel=2
-set laststatus=2
+
+" Folding with Tree-sitter (open by default)
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+set foldlevel=99
+set foldnestmax=10
+set nofoldenable
+
+" Sessions
 set sessionoptions-=blank
-set noswapfile nobackup nowritebackup
+
+" Performance / keycode timing
+set ttimeout
+set ttimeoutlen=10
+
 filetype plugin indent on
 
-" Use zsh if present
+" ─────────────────────────────────────────────────────────────────────────────
+"  Shells (POSIX first; Windows handled below)
+" ─────────────────────────────────────────────────────────────────────────────
 if executable('zsh')
   set shell=/bin/zsh
 else
   set shell=/bin/sh
 endif
 
-" ── Use PowerShell on Windows (prefers pwsh, falls back to powershell) ──────
+" PowerShell on Windows (prefer pwsh)
 if has('win32') || has('win64')
   if executable('pwsh')
     set shell=pwsh
   else
     set shell=powershell
   endif
-  " Non-interactive, predictable, and UTF-8 friendly
   set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-  " Quoting rules so :! and :make work reliably
   set shellquote=\"
   set shellxquote=
-  " Capture stderr with stdout for :read !, :make, etc.
   set shellredir=>\ %s\ 2>&1
-  " Pipe output to a file when Vim needs it (e.g. :makeprg)
   set shellpipe=>\ %s\ 2>&1
-  " Use UTF-8 to avoid mojibake
   set encoding=utf-8
-  let $PSModulePath=$PSModulePath  " (forces env refresh in some setups)
 endif
 
-" Providers off
+" ─────────────────────────────────────────────────────────────────────────────
+"  Providers off
+" ─────────────────────────────────────────────────────────────────────────────
 let g:loaded_perl_provider = 0
 let g:loaded_node_provider = 0
 let g:loaded_ruby_provider = 0
 
-" Netrw (built-in)
+" ─────────────────────────────────────────────────────────────────────────────
+"  Netrw (built-in)
+" ─────────────────────────────────────────────────────────────────────────────
 let g:netrw_banner=0
 let g:netrw_liststyle=3
 let g:netrw_browse_split=4
 let g:netrw_altv=1
 let g:netrw_winsize=25
+let g:netrw_keepdir = 1
 
-" Grep: prefer ripgrep if available (fallbacks are shell-friendly on Windows too)
+" ─────────────────────────────────────────────────────────────────────────────
+"  Grep (prefer ripgrep) + proper quickfix formatting
+" ─────────────────────────────────────────────────────────────────────────────
 if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --glob\ '!.git'
-elseif has('win32') || has('win64')
-  set grepprg=findstr\ /n\ /s\ /p
 else
-  set grepprg=grep\ -R\ -n\ --exclude-dir=.git\ --exclude-dir=node_modules\ --binary-files=without-match\ --line-number\ --color=never
+  if has('win32') || has('win64')
+    set grepprg=findstr\ /n\ /s\ /p
+  else
+    set grepprg=grep\ -R\ -n\ --exclude-dir=.git\ --exclude-dir=node_modules\ --binary-files=without-match\ --line-number\ --color=never
+  endif
 endif
-
-" Make ** recursive searching work with :find
+set grepformat=%f:%l:%c:%m
 set path+=**
 
 " ─────────────────────────────────────────────────────────────────────────────
-" Highlights & UX niceties (no heredocs; inline :lua call is safe)
+"  Autocmds
 " ─────────────────────────────────────────────────────────────────────────────
 augroup YankHL
   autocmd!
@@ -119,19 +147,19 @@ augroup CursorLineToggle
   autocmd WinLeave * setlocal nocursorline
 augroup END
 
-" Autochdir to file dir
+" On Vim startup, cd to the directory of the opened file
 augroup AutoChdir
   autocmd!
-  autocmd VimEnter * silent! lcd %:p:h
+  autocmd VimEnter * silent! cd %:p:h
 augroup END
 
-" Strip trailing whitespace
+" Strip trailing whitespace (skip Markdown to keep hard wraps)
 augroup TrimWhitespace
   autocmd!
-  autocmd BufWritePre * %s/\s\+$//e
+  autocmd BufWritePre * if &ft !=# 'markdown' | %s/\s\+$//e | endif
 augroup END
 
-" Indentation by filetype
+" Per-filetype indent
 augroup FiletypeIndent
   autocmd!
   autocmd FileType go,lua setlocal shiftwidth=4 tabstop=4 noexpandtab
@@ -145,13 +173,13 @@ augroup FiletypeDisplay
   autocmd TermOpen * setlocal signcolumn=no nonumber
 augroup END
 
-" Restore last cursor position
+" Restore last cursor position (column-accurate)
 augroup LastCursor
   autocmd!
-  autocmd BufReadPost * if line("'\"")>1 && line("'\"")<=line("$") | exec "normal! g'\"" | endif
+  autocmd BufReadPost * if line("'\"")>1 && line("'\"")<=line("$") | execute "normal! g`\"" | endif
 augroup END
 
-" Close quickfix after opening an entry
+" Quickfix: close after jumping
 augroup QfEnterClose
   autocmd!
   autocmd FileType qf nnoremap <silent><buffer> <CR> <CR>:cclose<CR>
@@ -159,15 +187,15 @@ augroup QfEnterClose
 augroup END
 
 " ─────────────────────────────────────────────────────────────────────────────
-" Commands
+"  Commands
 " ─────────────────────────────────────────────────────────────────────────────
 command! PrettyJSON %!python -m json.tool
 
 " ─────────────────────────────────────────────────────────────────────────────
-" Functions (no-deps stand-ins)
+"  Tiny helpers (no external deps)
 " ─────────────────────────────────────────────────────────────────────────────
 
-" Toggle netrw (Explorer) like NvimTree
+" Toggle netrw like a tree
 function! s:ToggleNetrw() abort
   for w in range(1, winnr('$'))
     if getbufvar(winbufnr(w), '&filetype') ==# 'netrw'
@@ -175,52 +203,37 @@ function! s:ToggleNetrw() abort
       return
     endif
   endfor
-  Lexplore
-  vert resize 45
+  Lexplore | vert resize 45
 endfunction
 
-" Close current buffer, keep window layout
+" Close current buffer but preserve layout
 function! CloseBuffer() abort
-  let l:bn = bufnr('%')
-  bprevious | execute 'bdelete ' . l:bn
-endfunction
-
-" Small, generic comment toggler (respects 'commentstring')
-function! s:ToggleCommentRange(line1, line2) range abort
-  let l:cs = &l:commentstring
-  if l:cs ==# '' | let l:cs = '# %s' | endif
-  let l:pref = substitute(l:cs, '%s', '', '')
-  let l:pref = substitute(l:pref, '\s\+$', '', '')
-  let l:is_commented = 1
-  for lnum in range(a:line1, a:line2)
-    if getline(lnum) !~ '^\s*' . escape(l:pref, '#*/\^$.~[](){}+?|-')
-      let l:is_commented = 0 | break
-    endif
-  endfor
-  for lnum in range(a:line1, a:line2)
-    let l:ln = getline(lnum)
-    if l:is_commented
-      call setline(lnum, substitute(l:ln, '^\s*' . escape(l:pref,'#*/\^$.~[](){}+?|-') . '\s\?', '', ''))
-    else
-      call setline(lnum, l:pref . ' ' . l:ln)
-    endif
-  endfor
-endfunction
-
-nnoremap <silent> <C-c> :<C-u>set opfunc=<SID>CommentOp<CR>g@
-xnoremap <silent> <C-c> :<C-u>call <SID>ToggleCommentRange(line("'<"), line("'>"))<CR>
-
-function! s:CommentOp(type) abort
-  if a:type ==# 'line'
-    call <SID>ToggleCommentRange(line('.'), line('.'))
+  let l:list = getbufinfo({'buflisted':1})
+  if len(l:list) > 1
+    bprevious | execute 'bdelete ' . bufnr('%')
   else
-    normal! `[V`]
-    call <SID>ToggleCommentRange(line("'<"), line("'>"))
+    enew | bdelete #
   endif
 endfunction
 
+" Simple comment toggler (uses 'commentstring')
+function! s:ToggleCommentRange(line1, line2) range abort
+  let l:cs = &l:commentstring
+  if empty(l:cs) | let l:cs = '# %s' | endif
+  let l:pref = substitute(l:cs, '%s', '', '')
+  let l:pref = substitute(l:pref, '\s\+$', '', '')
+  let l:rx = '^\s*' . escape(l:pref, '#*/\^$.~[](){}+?|-')
+  let l:is_commented = 1
+  for lnum in range(a:line1, a:line2)
+    if getline(lnum) !~ l:rx | let l:is_commented = 0 | break | endif
+  endfor
+  for lnum in range(a:line1, a:line2)
+    let l:ln = getline(lnum)
+    call setline(lnum, l:is_commented ? substitute(l:ln, l:rx . '\s\?', '', '') : (l:pref . ' ' . l:ln))
+  endfor
+endfunction
+
 " Poor-man's "LSP"
-nnoremap <silent> K :help <C-r><C-w><CR>
 function! s:GotoDef() abort
   try
     execute 'tag ' . expand('<cword>')
@@ -234,36 +247,28 @@ function! s:FindRefs() abort
   copen
 endfunction
 
-" Git helpers without plugins
-nnoremap <silent> gx :silent! !git checkout -- %<CR>:edit<CR>
-nnoremap <silent> gs :silent! !git add %<CR>:echo 'Staged current file'<CR>
-nnoremap <silent> gn :if &diff<Bar>normal! ]c<Bar>else<Bar>cnext<Bar>endif<CR>
-nnoremap <silent> gp :if &diff<Bar>normal! [c<Bar>else<Bar>cprevious<Bar>endif<CR>
-
 " ─────────────────────────────────────────────────────────────────────────────
-" Mappings – preserved semantics with built-in stand-ins
+"  Keymaps
 " ─────────────────────────────────────────────────────────────────────────────
+" Optional leader: uncomment to adopt <Space> as <Leader> (conflicts with the
+" Space → ":" mapping below, so pick one style and stick with it).
+" let mapleader = ' '
 
-" NetRW toggle like NvimTree on <C-b>
+" Netrw toggle (like NvimTree) on <C-b>
 nnoremap <silent> <C-b> :call <SID>ToggleNetrw()<CR>
 inoremap <silent> <C-b> <C-o>:call <SID>ToggleNetrw()<CR><Esc>
 
-" Buffer/Tab nav
-" Primary
+" Buffers/Tabs
 nnoremap <silent> <M-l> :bnext<CR>
 nnoremap <silent> <M-h> :bprevious<CR>
 nnoremap <silent> <A-l> :bnext<CR>
 nnoremap <silent> <A-h> :bprevious<CR>
 nnoremap <silent> <C-l> :bnext<CR>
 nnoremap <silent> <C-h> :bprevious<CR>
-" Fallback for terminals that send ESC + key
 nnoremap <silent> <Esc>l :bnext<CR>
 nnoremap <silent> <Esc>h :bprevious<CR>
-
 nnoremap <silent> ( :tabprevious<CR>
 nnoremap <silent> ) :tabnext<CR>
-
-" Close buffer
 nnoremap <silent> <A-d> :call CloseBuffer()<CR>
 nnoremap <silent> <A-D> :call CloseBuffer()<CR>
 
@@ -273,14 +278,14 @@ inoremap <silent> <C-j> <C-\><C-n>
 vnoremap <silent> <C-j> <C-\><C-n>
 tnoremap <silent> <C-j> <C-\><C-n>
 
-" Command mode on Space
+" Command-line on Space (comment this if you enable <Leader>=Space)
 nnoremap <Space> :
 
-" Finders (Telescope stand-ins)
-nnoremap <silent> <C-p> :GFiles<CR>
-nnoremap <silent> <C-f> :RG<CR>
+" Finders (fzf): <C-p> prefers Git files; falls back to Files; <C-f> to Rg or :grep
+nnoremap <silent><expr> <C-p> isdirectory('.git') ? ":GFiles<CR>" : ":Files<CR>"
+nnoremap <silent> <C-f> :silent! RG<CR>
 
-" “LSP” keys
+" DIY “LSP”
 nnoremap <silent> <F1> :help <C-r><C-w><CR>
 nnoremap <silent> <F2> :call <SID>GotoDef()<CR>
 nnoremap <silent> <F3> :call <SID>FindRefs()<CR>
@@ -288,20 +293,22 @@ nnoremap <silent> <F4> :echo 'Apply code action (manual)'<CR>
 nnoremap <silent> gi    :call <SID>FindRefs()<CR>
 nnoremap <silent> gd    :call <SID>GotoDef()<CR>
 nnoremap <silent> gr    :call <SID>FindRefs()<CR>
-nnoremap <silent> gw    :vimgrep /\<\k\+\>/gj **/* <Bar> copen<CR>
+nnoremap <silent> gw    :vimgrep /\<\k\+\>/gj **/* \| copen<CR>
 
 " Wrapped-line movement
 nnoremap <silent> j gj
 nnoremap <silent> k gk
-map <silent> gl $
-map <silent> gh 0
+nnoremap <silent> gl $
+nnoremap <silent> gh 0
 
 " Terminal
 nnoremap <silent> <C-T> :terminal<CR>
 
-" Window resize
+" Resize height with = (smaller) and - (larger)
 nnoremap <silent> = :resize -4<CR>
 nnoremap <silent> - :resize +4<CR>
+
+" Resize width with + (narrower) and _ (wider)
 nnoremap <silent> + :vertical resize -5<CR>
 nnoremap <silent> _ :vertical resize +5<CR>
 
@@ -313,18 +320,22 @@ inoremap <silent> <A-k> <Esc>:m .-2<CR>==gi
 vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
 vnoremap <silent> <A-k> :m '<-2<CR>gv=gv
 
+" Comment toggles (avoid <C-c> conflicts in some terminals)
+nnoremap <silent> <C-c> :<C-u>call <SID>ToggleCommentRange(line('.'), line('.'))<CR>
+xnoremap <silent> <C-c> :<C-u>call <SID>ToggleCommentRange(line("'<"), line("'>"))<CR>
+
 " Misc
 nnoremap <silent> <C-LeftMouse> <Nop>
 nnoremap <C-Space> za
 xnoremap <silent> * y/\V<C-R>=escape(@",'/\')<CR><CR>
 
-
-" ── Basic Lua configuration ─────────────────────────────────────────────────────
+" ─────────────────────────────────────────────────────────────────────────────
+"  Tree-sitter
+" ─────────────────────────────────────────────────────────────────────────────
 lua << EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "lua", "vim", "vimdoc", "bash", "python", "javascript", "typescript", "go", "json", "html", "css", "yaml" },
+require('nvim-treesitter.configs').setup {
+  ensure_installed = { "lua","vim","vimdoc","bash","python","javascript","typescript","go","json","html","css","yaml" },
   highlight = { enable = true, additional_vim_regex_highlighting = false },
   indent = { enable = true },
 }
 EOF
-" ─────────────────────────────────────────────────────────────────────────────
