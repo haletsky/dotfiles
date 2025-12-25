@@ -180,8 +180,6 @@ setup_diagnostics()
 local capabilities = setup_cmp()
 
 -- 3) LSP servers
-local lspconfig = require("lspconfig")
-
 local servers = {
 	"clangd",
 	"jsonls",
@@ -194,9 +192,10 @@ local servers = {
 	"lua_ls",
 	"csharp_ls",
 	"pylsp",
+	"templ",
 }
 for _, name in ipairs(servers) do
-	lspconfig[name].setup({
+	vim.lsp.enable(name, {
 		on_attach    = lsp_on_attach,
 		capabilities = capabilities,
 	})
