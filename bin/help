@@ -22,4 +22,4 @@ printcommand 'Delete all node_modules recursivly in the current folder' \
              'find . -type d -name node_modules -prune -print -exec rm -rf {} \'
 
 printcommand 'Get size of the current folder' \
-             'du -hs'
+             'du -h --max-depth=1 | sort -hr'
