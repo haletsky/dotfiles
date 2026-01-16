@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -euo pipefail
+
 GRAY="\x1b[90m"
 BLUE="\x1b[34m"
 RED="\x1b[31m"
@@ -9,17 +11,17 @@ YELLOW="\x1b[33m"
 MAGENTA="\x1b[35m"
 RESET="\x1b[0m"
 
-printcommand() {
+print() {
     TEXT=$1
     COMMAND=$2
 
-    echo "${GRAY} ${TEXT}:$RESET"
-    echo "\t${YELLOW}${COMMAND};$RESET"
-    echo
+    printf "${GRAY} ${TEXT}:$RESET\n"
+    printf "\t${YELLOW}${COMMAND};$RESET\n"
+    printf "\n"
 }
 
-printcommand 'Delete all node_modules recursivly in the current folder' \
-             'find . -type d -name node_modules -prune -print -exec rm -rf {} \'
+print 'Delete all node_modules recursivly in the current folder' \
+        'find . -type d -name node_modules -prune -print -exec rm -rf {} \'
 
-printcommand 'Get size of the current folder' \
-             'du -h --max-depth=1 | sort -hr'
+print 'Get size of the current folder' \
+        'du -h --max-depth=1 | sort -hr'
