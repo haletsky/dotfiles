@@ -1,3 +1,8 @@
+## Quick install
+```bash
+curl -fsSL https://raw.githubusercontent.com/haletsky/dotfiles/main/setup.sh | bash
+```
+
 ## System:
 - [Shell](https://github.com/robbyrussell/oh-my-zsh#prerequisites)
 - [Terminal Prompt](https://github.com/ergenekonyigit/lambda-gitster)
