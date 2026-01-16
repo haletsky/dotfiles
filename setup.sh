@@ -1,8 +1,51 @@
 #! /bin/bash
 
 DOTFILES_DIR="$HOME/dotfiles"
-DOTFILES_REPO="git@github.com:haletsky/dotfiles.git"
+DOTFILES_REPO_SSH="git@github.com:haletsky/dotfiles.git"
+DOTFILES_REPO_HTTPS="https://github.com/haletsky/dotfiles.git"
 OS_NAME="$(uname -s)"
+
+download_file() {
+	local url="$1"
+	local dest="$2"
+
+	if command -v curl >/dev/null 2>&1; then
+		curl -fLo "$dest" --create-dirs "$url"
+	elif command -v wget >/dev/null 2>&1; then
+		mkdir -p "$(dirname "$dest")"
+		wget -qO "$dest" "$url"
+	else
+		echo "curl or wget not found (cannot download $url)."
+		return 1
+	fi
+}
+
+run_remote_script() {
+	local url="$1"
+	local interpreter="${2:-sh}"
+	local tmpfile
+
+	tmpfile="$(mktemp)"
+	if command -v curl >/dev/null 2>&1; then
+		if ! curl -fsSL "$url" -o "$tmpfile"; then
+			echo "Failed to download $url."
+			rm -f "$tmpfile"
+			return 1
+		fi
+	elif command -v wget >/dev/null 2>&1; then
+		if ! wget -qO "$tmpfile" "$url"; then
+			echo "Failed to download $url."
+			rm -f "$tmpfile"
+			return 1
+		fi
+	else
+		echo "curl or wget not found (cannot download $url)."
+		return 1
+	fi
+
+	"$interpreter" "$tmpfile"
+	rm -f "$tmpfile"
+}
 
 if [ ! -d "$DOTFILES_DIR/.git" ]; then
 	if [ -e "$DOTFILES_DIR" ]; then
@@ -24,7 +67,16 @@ if [ ! -d "$DOTFILES_DIR/.git" ]; then
 		fi
 	fi
 
-	git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+	clone_repo="$DOTFILES_REPO_SSH"
+	if ! git ls-remote "$DOTFILES_REPO_SSH" >/dev/null 2>&1; then
+		echo "SSH access failed; falling back to HTTPS."
+		clone_repo="$DOTFILES_REPO_HTTPS"
+	fi
+
+	if ! git clone "$clone_repo" "$DOTFILES_DIR"; then
+		echo "Failed to clone $clone_repo."
+		exit 1
+	fi
 fi
 
 mkdir -p ~/.config/kitty
@@ -42,22 +94,32 @@ ln -s "$DOTFILES_DIR/Material Darker.conf" ~/.config/kitty/Material\ Darker.conf
 ln -s "$DOTFILES_DIR/rasmus.conf" ~/.config/kitty/rasmus.conf
 ln -s "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
 
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+VIM_PLUG_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
+download_file "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" "$VIM_PLUG_PATH"
 
 if command -v zsh >/dev/null 2>&1; then
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	run_remote_script "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 else
 	echo "zsh not found (skipping oh-my-zsh install)"
 fi
 
 if [ "$OS_NAME" = "Darwin" ]; then
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	if ! command -v brew >/dev/null 2>&1; then
+		run_remote_script "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" "/bin/bash"
+	fi
 	brew install stats bash-language-server yaml-language-server ripgrep neovim kitty
 elif [ -f /etc/os-release ] && \
 	( grep -q '^ID=debian' /etc/os-release || grep -q '^ID=ubuntu' /etc/os-release ); then
 	sudo apt-get update
-	sudo apt-get install -y ripgrep neovim kitty bash-language-server node-yaml-language-server
+	sudo apt-get install -y ripgrep neovim
+elif [ -f /etc/os-release ] && grep -q '^ID=alpine' /etc/os-release; then
+	if command -v sudo >/dev/null 2>&1; then
+		sudo apk add --no-cache ripgrep neovim
+	else
+		apk add --no-cache ripgrep neovim
+	fi
 else
 	echo "Unsupported OS for package install (skipping)."
 fi
+
+nvim +PlugInstall +qa

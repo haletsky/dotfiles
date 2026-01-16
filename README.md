@@ -1,6 +1,9 @@
 ## Quick install
 ```bash
-curl -fsSL https://raw.githubusercontent.com/haletsky/dotfiles/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/haletsky/dotfiles/master/setup.sh | bash
+```
+```bash
+wget -qO- https://raw.githubusercontent.com/haletsky/dotfiles/master/setup.sh | bash
 ```
 
 ## System:

@@ -131,7 +131,14 @@ set noswapfile       " Don’t create swap files
 set nobackup         " Don’t create backup files
 set nowritebackup    " Don’t create writebackup files
 set makeprg=make     " Use ‘make’ for :make
-set shell=/bin/zsh   " Use zsh as shell
+
+if executable('zsh')
+  let &shell = exepath('zsh')
+elseif executable('bash')
+  let &shell = exepath('bash')
+else
+  let &shell = exepath('sh')
+endif
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Filetype, plugin and indent detection
@@ -250,8 +257,8 @@ let g:lightline.mode_map = {
   \ 't': ' T ',
   \ }
 " Python Provider:
-let g:python_host_prog  = '/usr/bin/python3'
-let g:python3_host_prog = '/usr/bin/python3'
+" let g:python_host_prog  = '/Users/haletsky/miniconda3/bin/python'
+" let g:python3_host_prog = '/Users/haletsky/miniconda3/bin/python'
 " }}}
 
 
@@ -454,7 +461,7 @@ nnoremap <silent> ` :call OpenTODO()<CR>
 
 
 " COMMANDS: {{{
-command PrettyJSON %!python -m json.tool
+command PrettyJSON %!python3 -m json.tool
 " command Diff !kitty @ new-window --new-tab --cwd $(pwd) --no-response git difftool --no-symlinks --dir-diff
 " }}}
 

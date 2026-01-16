@@ -81,9 +81,11 @@ filetype plugin indent on
 "  Shells (POSIX first; Windows handled below)
 " ─────────────────────────────────────────────────────────────────────────────
 if executable('zsh')
-  set shell=/bin/zsh
+  let &shell = exepath('zsh')
+elseif executable('bash')
+  let &shell = exepath('bash')
 else
-  set shell=/bin/sh
+  let &shell = exepath('sh')
 endif
 
 " PowerShell on Windows (prefer pwsh)
