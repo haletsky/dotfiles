@@ -79,6 +79,7 @@ if [ ! -d "$DOTFILES_DIR/.git" ]; then
 	fi
 fi
 
+mkdir -p ~/bin
 mkdir -p ~/.config/kitty
 mkdir -p ~/.config/nvim
 mkdir -p ~/.vim/wiki
@@ -93,6 +94,8 @@ ln -s "$DOTFILES_DIR/kitty.conf" ~/.config/kitty/kitty.conf
 ln -s "$DOTFILES_DIR/Material Darker.conf" ~/.config/kitty/Material\ Darker.conf
 ln -s "$DOTFILES_DIR/rasmus.conf" ~/.config/kitty/rasmus.conf
 ln -s "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
+ln -s "$DOTFILES_DIR/bin/renamer" ~/bin/renamer
+ln -s "$DOTFILES_DIR/bin/help" ~/bin/help
 
 VIM_PLUG_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"
 download_file "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" "$VIM_PLUG_PATH"

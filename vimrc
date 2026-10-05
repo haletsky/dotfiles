@@ -41,7 +41,7 @@ Plug 'echasnovski/mini.nvim'
 Plug 'nvchad/volt'
 Plug 'nvchad/menu'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
-Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+" Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 Plug 'folke/which-key.nvim'
 Plug 'folke/neodev.nvim'
 call plug#end()
@@ -191,11 +191,12 @@ require'gitsigns'.setup{
   }
 }
 require'trouble'.setup{}
+require'custom-treesitter'
 require'custom-lsp'
 require'custom-bufferline'
 require'custom-nvim-tree'
 require'custom-which-key'
-require'custom-avante'
+-- require'custom-avante'
 require'custom-markdown'
 EOF
 " }}}
@@ -213,7 +214,7 @@ let g:NERDSpaceDelims = 1
 " NvimTree:
 let g:nvim_tree_group_empty = 1
 let g:nvim_tree_add_trailing = 1
-let g:nvim_tree_width = 45
+let g:nvim_tree_width = 20
 let g:nvim_tree_indent_markers = 1
 let g:nvim_tree_disable_window_picker = 1
 let g:nvim_tree_icons = { 'default': '' }
@@ -471,7 +472,7 @@ function! CloseSidewins()
   silent! bd */.git//
   silent! bd */index.wiki
   silent! bd *.wiki
-  lua require('avante').close_sidebar()
+  " lua require('avante').close_sidebar()
   lua require 'nvim-tree.api'.tree.close()
 endfunction
 
@@ -480,7 +481,7 @@ function! CloseSidewinsButNoNvimTree()
   silent! bd */index.wiki
   silent! bd *.wiki
   set equalalways
-  lua require('avante').close_sidebar()
+  " lua require('avante').close_sidebar()
   lua require 'nvim-tree.api'.tree.toggle()
 endfunction
 
@@ -489,7 +490,7 @@ function! CloseSidewinsButFocusNvimTree()
   silent! bd */index.wiki
   silent! bd *.wiki
   set equalalways
-  lua require('avante').close_sidebar()
+  " lua require('avante').close_sidebar()
   lua require 'nvim-tree.api'.tree.focus()
 endfunction
 
@@ -540,7 +541,7 @@ function! OpenTODO()
   vsplit
   execute 'VimwikiIndex'
   wincmd H
-  vertical resize 45
+  vertical resize 35
   set winhl=Normal:NvimTreeNormal
   set wrap
   set signcolumn=no
